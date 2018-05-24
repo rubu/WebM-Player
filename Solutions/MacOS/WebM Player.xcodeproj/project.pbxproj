@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A643324120B6CBFB00761864 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A643324020B6CBFB00761864 /* AppDelegate.m */; };
 		A643324320B6CBFB00761864 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A643324220B6CBFB00761864 /* Assets.xcassets */; };
 		A643324620B6CBFB00761864 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A643324420B6CBFB00761864 /* MainMenu.xib */; };
-		A643324920B6CBFB00761864 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A643324820B6CBFB00761864 /* main.m */; };
+		A67FABF320B6ED700013A775 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A67FABF020B6ED700013A775 /* main.m */; };
+		A67FABF420B6ED700013A775 /* WebMPlayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A67FABF220B6ED700013A775 /* WebMPlayerDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A643323C20B6CBFB00761864 /* WebM Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WebM Player.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A643323F20B6CBFB00761864 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		A643324020B6CBFB00761864 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A643324220B6CBFB00761864 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A643324520B6CBFB00761864 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		A643324720B6CBFB00761864 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A643324820B6CBFB00761864 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A643324A20B6CBFB00761864 /* WebM_Player.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WebM_Player.entitlements; sourceTree = "<group>"; };
+		A67FABF020B6ED700013A775 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A67FABF120B6ED700013A775 /* WebMPlayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebMPlayerDelegate.h; sourceTree = "<group>"; };
+		A67FABF220B6ED700013A775 /* WebMPlayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebMPlayerDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +38,7 @@
 		A643323320B6CBFB00761864 = {
 			isa = PBXGroup;
 			children = (
+				A67FABEF20B6ED510013A775 /* Source */,
 				A643323E20B6CBFB00761864 /* WebM Player */,
 				A643323D20B6CBFB00761864 /* Products */,
 			);
@@ -54,16 +55,24 @@
 		A643323E20B6CBFB00761864 /* WebM Player */ = {
 			isa = PBXGroup;
 			children = (
-				A643323F20B6CBFB00761864 /* AppDelegate.h */,
-				A643324020B6CBFB00761864 /* AppDelegate.m */,
 				A643324220B6CBFB00761864 /* Assets.xcassets */,
 				A643324420B6CBFB00761864 /* MainMenu.xib */,
 				A643324720B6CBFB00761864 /* Info.plist */,
-				A643324820B6CBFB00761864 /* main.m */,
 				A643324A20B6CBFB00761864 /* WebM_Player.entitlements */,
 			);
 			path = "WebM Player";
 			sourceTree = "<group>";
+		};
+		A67FABEF20B6ED510013A775 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				A67FABF120B6ED700013A775 /* WebMPlayerDelegate.h */,
+				A67FABF220B6ED700013A775 /* WebMPlayerDelegate.m */,
+				A67FABF020B6ED700013A775 /* main.m */,
+			);
+			name = Source;
+			path = ../../Source;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -135,8 +144,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A643324920B6CBFB00761864 /* main.m in Sources */,
-				A643324120B6CBFB00761864 /* AppDelegate.m in Sources */,
+				A67FABF420B6ED700013A775 /* WebMPlayerDelegate.m in Sources */,
+				A67FABF320B6ED700013A775 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
