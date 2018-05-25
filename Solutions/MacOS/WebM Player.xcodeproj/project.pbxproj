@@ -9,8 +9,14 @@
 /* Begin PBXBuildFile section */
 		A643324320B6CBFB00761864 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A643324220B6CBFB00761864 /* Assets.xcassets */; };
 		A643324620B6CBFB00761864 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A643324420B6CBFB00761864 /* MainMenu.xib */; };
-		A67FABF320B6ED700013A775 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A67FABF020B6ED700013A775 /* main.m */; };
-		A67FABF420B6ED700013A775 /* WebMPlayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A67FABF220B6ED700013A775 /* WebMPlayerDelegate.m */; };
+		A67FABF720B6F7340013A775 /* Ebml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FABF520B6F7340013A775 /* Ebml.cpp */; };
+		A67FAC0A20B712D40013A775 /* WebMPlayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC0520B712D40013A775 /* WebMPlayerDelegate.m */; };
+		A67FAC0B20B712D40013A775 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC0720B712D40013A775 /* main.m */; };
+		A67FAC0C20B712D40013A775 /* WebMPlayerOpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC0920B712D40013A775 /* WebMPlayerOpenGLView.mm */; };
+		A67FAC0E20B7157C0013A775 /* EbmlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */; };
+		A67FAC1220B7189F0013A775 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC1120B7189F0013A775 /* Player.cpp */; };
+		A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */; };
+		A67FAC1820B7DFE70013A775 /* VideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,9 +25,21 @@
 		A643324520B6CBFB00761864 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		A643324720B6CBFB00761864 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A643324A20B6CBFB00761864 /* WebM_Player.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WebM_Player.entitlements; sourceTree = "<group>"; };
-		A67FABF020B6ED700013A775 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		A67FABF120B6ED700013A775 /* WebMPlayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebMPlayerDelegate.h; sourceTree = "<group>"; };
-		A67FABF220B6ED700013A775 /* WebMPlayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebMPlayerDelegate.m; sourceTree = "<group>"; };
+		A67FABF520B6F7340013A775 /* Ebml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ebml.cpp; sourceTree = "<group>"; };
+		A67FABF620B6F7340013A775 /* Ebml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ebml.h; sourceTree = "<group>"; };
+		A67FAC0520B712D40013A775 /* WebMPlayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebMPlayerDelegate.m; sourceTree = "<group>"; };
+		A67FAC0620B712D40013A775 /* WebMPlayerOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebMPlayerOpenGLView.h; sourceTree = "<group>"; };
+		A67FAC0720B712D40013A775 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A67FAC0820B712D40013A775 /* WebMPlayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebMPlayerDelegate.h; sourceTree = "<group>"; };
+		A67FAC0920B712D40013A775 /* WebMPlayerOpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebMPlayerOpenGLView.mm; sourceTree = "<group>"; };
+		A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EbmlParser.cpp; sourceTree = "<group>"; };
+		A67FAC0F20B715B10013A775 /* EbmlParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EbmlParser.h; sourceTree = "<group>"; };
+		A67FAC1020B7187F0013A775 /* Player.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		A67FAC1120B7189F0013A775 /* Player.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Player.cpp; sourceTree = "<group>"; };
+		A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VPXVideoDecoder.cpp; sourceTree = "<group>"; };
+		A67FAC1420B738570013A775 /* VPXVideoDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VPXVideoDecoder.h; sourceTree = "<group>"; };
+		A67FAC1620B738810013A775 /* VideoDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDecoder.h; sourceTree = "<group>"; };
+		A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VideoDecoder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,12 +84,33 @@
 		A67FABEF20B6ED510013A775 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				A67FABF120B6ED700013A775 /* WebMPlayerDelegate.h */,
-				A67FABF220B6ED700013A775 /* WebMPlayerDelegate.m */,
-				A67FABF020B6ED700013A775 /* main.m */,
+				A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */,
+				A67FAC1420B738570013A775 /* VPXVideoDecoder.h */,
+				A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */,
+				A67FAC0420B712BB0013A775 /* MacOS */,
+				A67FABF520B6F7340013A775 /* Ebml.cpp */,
+				A67FABF620B6F7340013A775 /* Ebml.h */,
+				A67FAC0F20B715B10013A775 /* EbmlParser.h */,
+				A67FAC1020B7187F0013A775 /* Player.h */,
+				A67FAC1120B7189F0013A775 /* Player.cpp */,
+				A67FAC1620B738810013A775 /* VideoDecoder.h */,
+				A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */,
 			);
 			name = Source;
 			path = ../../Source;
+			sourceTree = SOURCE_ROOT;
+		};
+		A67FAC0420B712BB0013A775 /* MacOS */ = {
+			isa = PBXGroup;
+			children = (
+				A67FAC0720B712D40013A775 /* main.m */,
+				A67FAC0820B712D40013A775 /* WebMPlayerDelegate.h */,
+				A67FAC0520B712D40013A775 /* WebMPlayerDelegate.m */,
+				A67FAC0620B712D40013A775 /* WebMPlayerOpenGLView.h */,
+				A67FAC0920B712D40013A775 /* WebMPlayerOpenGLView.mm */,
+			);
+			name = MacOS;
+			path = ../../Source/MacOS;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -144,8 +183,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A67FABF420B6ED700013A775 /* WebMPlayerDelegate.m in Sources */,
-				A67FABF320B6ED700013A775 /* main.m in Sources */,
+				A67FAC0A20B712D40013A775 /* WebMPlayerDelegate.m in Sources */,
+				A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */,
+				A67FAC0C20B712D40013A775 /* WebMPlayerOpenGLView.mm in Sources */,
+				A67FAC1220B7189F0013A775 /* Player.cpp in Sources */,
+				A67FAC0E20B7157C0013A775 /* EbmlParser.cpp in Sources */,
+				A67FAC0B20B712D40013A775 /* main.m in Sources */,
+				A67FAC1820B7DFE70013A775 /* VideoDecoder.cpp in Sources */,
+				A67FABF720B6F7340013A775 /* Ebml.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +218,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_LINK_OBJC_RUNTIME = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -211,10 +257,19 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				HEADER_SEARCH_PATHS = "../../Dependencies/MacOS/libvpx-1.7.0/include";
+				LIBRARY_SEARCH_PATHS = "../../Dependencies/MacOS/libvpx-1.7.0/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_objc_readClassPair,
+					"-lvpx",
+				);
+				SDKROOT = macosx10.9;
 			};
 			name = Debug;
 		};
@@ -228,6 +283,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_LINK_OBJC_RUNTIME = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -260,9 +316,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				HEADER_SEARCH_PATHS = "../../Dependencies/MacOS/libvpx-1.7.0/include";
+				LIBRARY_SEARCH_PATHS = "../../Dependencies/MacOS/libvpx-1.7.0/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				SDKROOT = macosx;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_objc_readClassPair,
+					"-lvpx",
+				);
+				SDKROOT = macosx10.9;
 			};
 			name = Release;
 		};
