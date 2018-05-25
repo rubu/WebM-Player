@@ -38,7 +38,7 @@ VPXVideoDecoder::VPXVideoDecoder(vpx_codec_ctx_t codec_context, IEventListener* 
 {
 }
 
-void VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length)
+void VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length, unsigned int pts)
 {
     auto vpx_error = vpx_codec_decode(&codec_context_, bitstream, bitstream_length, nullptr, 0);
     if (vpx_error == VPX_CODEC_OK)
@@ -47,8 +47,15 @@ void VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstre
         vpx_image_t* image = nullptr;
         while ((image = vpx_codec_get_frame(&codec_context_, &iterator)) != nullptr)
         {
-            unsigned char* yuv_planes[3] = {image->planes[0], image->planes[1], image->planes[2]};
-            event_listener_->on_video_frame_decoded(yuv_planes);
+            if (image->fmt == VPX_IMG_FMT_I420)
+            {
+                unsigned char* yuv_planes[3] = {image->planes[0], image->planes[1], image->planes[2]};
+                event_listener_->on_i420_video_frame_decoded(yuv_planes, pts);
+            }
+            else
+            {
+                throw std::runtime_error("vpx_codec_get_frame() did not return a I420 frame");
+            }
         }
     }
 }

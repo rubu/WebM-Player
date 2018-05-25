@@ -4,6 +4,7 @@
 
 @interface WebMPlayerOpenGLView : NSOpenGLView
 
--(void) playFile:(NSURL*)fileURL;
+-(void)playFile:(NSURL*)fileURL;
+-(void)renderFrameForTime:(const CVTimeStamp*)timestamp;
 
 @end

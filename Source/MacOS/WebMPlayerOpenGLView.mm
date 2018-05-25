@@ -2,6 +2,7 @@
 #include "../Player.h"
 
 #import <OpenGL/gl.h>
+#include <mach/mach_time.h>
 
 CVReturn DisplayLinkOutputCallback(CVDisplayLinkRef displayLink,
                                         const CVTimeStamp *inNow,
@@ -10,13 +11,18 @@ CVReturn DisplayLinkOutputCallback(CVDisplayLinkRef displayLink,
                                         CVOptionFlags *flagsOut,
                                         void *displayLinkContext)
 {
+    WebMPlayerOpenGLView* view = (__bridge WebMPlayerOpenGLView*)(displayLinkContext);
+    [view renderFrameForTime:inOutputTime];
     return kCVReturnSuccess;
 }
 
 class PlayerEventListener : public Player::IEventListener
 {
 public:
-    PlayerEventListener(WebMPlayerOpenGLView* view) : view_(view)
+    PlayerEventListener(WebMPlayerOpenGLView* view) : view_(view),
+        first_frame_(true),
+        first_frame_host_time_(0),
+        first_frame_pts_(0)
     {
     }
 
@@ -31,8 +37,14 @@ public:
         });
     }
     
-    void on_video_frame_decoded(unsigned char* (&yuv_planes)[3]) override
+    void on_i420_video_frame_decoded(unsigned char* (&yuv_planes)[3], unsigned int pts) override
     {
+        if (first_frame_)
+        {
+            first_frame_host_time_ = mach_absolute_time();
+            first_frame_pts_ = pts;
+            first_frame_ = false;
+        }
     }
     
     void on_exception(const std::exception& exception) override
@@ -42,6 +54,9 @@ public:
     
 private:
     WebMPlayerOpenGLView* view_;
+    bool first_frame_;
+    uint64_t first_frame_host_time_;
+    unsigned int first_frame_pts_;
 };
 
 @implementation WebMPlayerOpenGLView
@@ -54,7 +69,6 @@ private:
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    _playerEventListener = std::make_unique<PlayerEventListener>(self);
     CVReturn result = CVDisplayLinkCreateWithCGDisplay(CGMainDisplayID(), &_displayLink);
     if(result == kCVReturnSuccess)
     {
@@ -80,8 +94,14 @@ private:
 
 -(void) playFile:(NSURL*)fileURL
 {
+    _playerEventListener = std::make_unique<PlayerEventListener>(self);
     _player = std::make_unique<Player>(fileURL.path.UTF8String, _playerEventListener.get());
     _player->start();
+}
+
+-(void)renderFrameForTime:(const CVTimeStamp*)timestamp
+{
+    
 }
 
 @end

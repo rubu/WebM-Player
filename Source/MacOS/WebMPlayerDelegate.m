@@ -43,6 +43,7 @@
         _openFileBaseURL = [fileURL URLByDeletingLastPathComponent];
         NSArray* subviews = ((NSView*)_window.contentView).subviews;
         [(WebMPlayerOpenGLView*)subviews[0] playFile:fileURL];
+        [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:fileURL.path]];
     }
 }
 

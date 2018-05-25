@@ -16,7 +16,7 @@ public:
         virtual ~IEventListener() = default;
         
         virtual void on_video_frame_size_changed(unsigned int width, unsigned int height) = 0;
-        virtual void on_video_frame_decoded(unsigned char* (&yuv_planes)[3]) = 0;
+        virtual void on_i420_video_frame_decoded(unsigned char* (&yuv_planes)[3], unsigned int pts) = 0;
         virtual void on_exception(const std::exception& exception) = 0;
     };
 
@@ -27,7 +27,7 @@ public:
     void stop();
 
     // VideoDecoder::IEventListener
-    void on_video_frame_decoded(unsigned char* (&yuv_planes)[3]) override;
+    void on_i420_video_frame_decoded(unsigned char* (&yuv_planes)[3], unsigned int pts) override;
 
 private:
     void decoding_thread();

@@ -133,21 +133,17 @@ void Player::decoding_thread()
                     {
                         throw std::runtime_error("lacing is not supported");
                     }
-                    auto pts = cluster_pts + ntohs(*reinterpret_cast<const short*>(data + track_number_size_length));
+                    auto pts = (cluster_pts + ntohs(*reinterpret_cast<const short*>(data + track_number_size_length))) * milliseconds_per_tick;
                     if (verbose_)
                     {
-                        auto pts_in_milliseconds = pts * milliseconds_per_tick;
-                        auto milliseconds = pts_in_milliseconds % 1000;
-                        pts_in_milliseconds -= milliseconds;
-                        auto seconds = (pts % 60000) / 1000;
-                        pts_in_milliseconds -= seconds * 1000;
-                        auto minutes = (pts % 3600000) / 60000;
-                        pts_in_milliseconds -= minutes * 3600000;
-                        auto hours = pts_in_milliseconds / 3600000;
+                        auto milliseconds = pts % 1000;
+                        auto seconds = ((pts - milliseconds) % 60000) / 1000;
+                        auto minutes = ((pts - milliseconds - seconds * 1000) % 3600000) / 60000;
+                        auto hours = (pts - milliseconds - seconds * 1000 - minutes * 3600000) / 3600000;
                         sprintf(timestamp, "%02u:%02u:%02u.%03u", hours, minutes, seconds, milliseconds);
                         std::cout << "frame @ " << timestamp << ", size - " << size - track_number_size_length - 3 << std::endl;
                     }
-                    video_decoder->decode_i420(data + track_number_size_length + 3, size - track_number_size_length - 3);
+                    video_decoder->decode_i420(data + track_number_size_length + 3, size - track_number_size_length - 3, pts);
                 }
                 simple_block = std::find_if(++simple_block, cluster->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::SimpleBlock; });
             }
@@ -160,7 +156,7 @@ void Player::decoding_thread()
     }
 }
 
-void Player::on_video_frame_decoded(unsigned char* (&yuv_planes)[3])
+void Player::on_i420_video_frame_decoded(unsigned char* (&yuv_planes)[3], unsigned int pts)
 {
-    
+    event_listener_->on_i420_video_frame_decoded(yuv_planes, pts);
 }
