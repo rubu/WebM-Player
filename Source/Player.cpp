@@ -4,7 +4,8 @@
 
 Player::Player(const char* file_path, IEventListener* event_listener, bool verbose) : file_path_(file_path),
     event_listener_(event_listener),
-    verbose_(verbose)
+    verbose_(verbose),
+    command_(Command::None)
 {
 }
 
@@ -15,14 +16,14 @@ Player::~Player()
 
 void Player::start()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     stop();
     decoding_thread_ = std::thread(std::bind(&Player::decoding_thread, this));
 }
 
 void Player::stop()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     if (decoding_thread_.joinable())
     {
         condition_variable_.notify_one();
@@ -143,7 +144,27 @@ void Player::decoding_thread()
                         sprintf(timestamp, "%02u:%02u:%02u.%03u", hours, minutes, seconds, milliseconds);
                         std::cout << "frame @ " << timestamp << ", size - " << size - track_number_size_length - 3 << std::endl;
                     }
-                    video_decoder->decode_i420(data + track_number_size_length + 3, size - track_number_size_length - 3, pts);
+                    bool wait = video_decoder->decode_i420(data + track_number_size_length + 3, size - track_number_size_length - 3, pts) == false;
+                    switch (get_next_command(wait))
+                    {
+                        case Command::Stop:
+                            return;
+                        case Command::Pause:
+                            {
+                                Command command;
+                                while ((command = get_next_command(true)) == Command::Pause)
+                                {
+                                }
+                                if(command == Command::Stop)
+                                {
+                                    return;
+                                }
+                            }
+                            break;
+                        case Command::Resume:
+                        case Command::None:
+                            break;
+                    }
                 }
                 simple_block = std::find_if(++simple_block, cluster->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::SimpleBlock; });
             }
@@ -156,7 +177,30 @@ void Player::decoding_thread()
     }
 }
 
-void Player::on_i420_video_frame_decoded(unsigned char* (&yuv_planes)[3], unsigned int pts)
+void Player::execute_command(Command command)
 {
-    event_listener_->on_i420_video_frame_decoded(yuv_planes, pts);
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        command_ = command;
+    }
+    condition_variable_.notify_one();
+}
+
+Player::Command Player::get_next_command(bool wait)
+{
+    Command command = Command::None;
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        if (command_ == Command::None && wait)
+        {
+            condition_variable_.wait(lock);
+        }
+        std::swap(command_, command);
+    }
+    return command;
+}
+
+bool Player::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */)
+{
+    return event_listener_->on_i420_video_frame_decoded(yuv_planes, pts);
 }

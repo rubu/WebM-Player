@@ -17,6 +17,9 @@
 		A67FAC1220B7189F0013A775 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC1120B7189F0013A775 /* Player.cpp */; };
 		A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */; };
 		A67FAC1820B7DFE70013A775 /* VideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */; };
+		A67FAC1A20B800A80013A775 /* I420toRGBA.frag in Resources */ = {isa = PBXBuildFile; fileRef = A67FAC1920B800A80013A775 /* I420toRGBA.frag */; };
+		A67FAC1C20B812E90013A775 /* default.vert in Resources */ = {isa = PBXBuildFile; fileRef = A67FAC1B20B812E90013A775 /* default.vert */; };
+		A67FAC2120B84EBA0013A775 /* YUVFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FAC2020B84EBA0013A775 /* YUVFrame.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,12 @@
 		A67FAC1420B738570013A775 /* VPXVideoDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VPXVideoDecoder.h; sourceTree = "<group>"; };
 		A67FAC1620B738810013A775 /* VideoDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDecoder.h; sourceTree = "<group>"; };
 		A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VideoDecoder.cpp; sourceTree = "<group>"; };
+		A67FAC1920B800A80013A775 /* I420toRGBA.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = I420toRGBA.frag; sourceTree = "<group>"; };
+		A67FAC1B20B812E90013A775 /* default.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = default.vert; sourceTree = "<group>"; };
+		A67FAC1D20B818A30013A775 /* OpenGLProgramVariablesBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLProgramVariablesBase.h; sourceTree = "<group>"; };
+		A67FAC1E20B819D30013A775 /* WebMPlayerOpenGLProgramVariables.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebMPlayerOpenGLProgramVariables.h; sourceTree = "<group>"; };
+		A67FAC1F20B84E140013A775 /* YUVFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YUVFrame.h; sourceTree = "<group>"; };
+		A67FAC2020B84EBA0013A775 /* YUVFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = YUVFrame.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +93,8 @@
 		A67FABEF20B6ED510013A775 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A67FAC1B20B812E90013A775 /* default.vert */,
+				A67FAC1920B800A80013A775 /* I420toRGBA.frag */,
 				A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */,
 				A67FAC1420B738570013A775 /* VPXVideoDecoder.h */,
 				A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */,
@@ -95,6 +106,10 @@
 				A67FAC1120B7189F0013A775 /* Player.cpp */,
 				A67FAC1620B738810013A775 /* VideoDecoder.h */,
 				A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */,
+				A67FAC1D20B818A30013A775 /* OpenGLProgramVariablesBase.h */,
+				A67FAC1E20B819D30013A775 /* WebMPlayerOpenGLProgramVariables.h */,
+				A67FAC1F20B84E140013A775 /* YUVFrame.h */,
+				A67FAC2020B84EBA0013A775 /* YUVFrame.cpp */,
 			);
 			name = Source;
 			path = ../../Source;
@@ -171,7 +186,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A67FAC1C20B812E90013A775 /* default.vert in Resources */,
 				A643324320B6CBFB00761864 /* Assets.xcassets in Resources */,
+				A67FAC1A20B800A80013A775 /* I420toRGBA.frag in Resources */,
 				A643324620B6CBFB00761864 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -183,6 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A67FAC2120B84EBA0013A775 /* YUVFrame.cpp in Sources */,
 				A67FAC0A20B712D40013A775 /* WebMPlayerDelegate.m in Sources */,
 				A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */,
 				A67FAC0C20B712D40013A775 /* WebMPlayerOpenGLView.mm in Sources */,

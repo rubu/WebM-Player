@@ -38,7 +38,7 @@ VPXVideoDecoder::VPXVideoDecoder(vpx_codec_ctx_t codec_context, IEventListener* 
 {
 }
 
-void VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length, unsigned int pts)
+bool VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length, uint64_t pts /* nanoseconds */)
 {
     auto vpx_error = vpx_codec_decode(&codec_context_, bitstream, bitstream_length, nullptr, 0);
     if (vpx_error == VPX_CODEC_OK)
@@ -50,7 +50,10 @@ void VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstre
             if (image->fmt == VPX_IMG_FMT_I420)
             {
                 unsigned char* yuv_planes[3] = {image->planes[0], image->planes[1], image->planes[2]};
-                event_listener_->on_i420_video_frame_decoded(yuv_planes, pts);
+                if (event_listener_->on_i420_video_frame_decoded(yuv_planes, pts) == false)
+                {
+                    return false;
+                }
             }
             else
             {
@@ -58,6 +61,7 @@ void VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstre
             }
         }
     }
+    return true;
 }
 
 std::unique_ptr<VPXVideoDecoder> VPXVideoDecoder::CreateVP8VideoDecoder(unsigned int width, unsigned int height, IEventListener* event_listener)
