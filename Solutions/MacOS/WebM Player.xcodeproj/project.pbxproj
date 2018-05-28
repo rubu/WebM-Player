@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A627E6C820BC6498002C94E1 /* OpenGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */; };
+		A627E6D620BC7324002C94E1 /* OpenGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6D420BC7324002C94E1 /* OpenGLShader.cpp */; };
+		A627E6D820BC73B2002C94E1 /* OpenGLContextLock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6D720BC73B2002C94E1 /* OpenGLContextLock.cpp */; };
 		A643324320B6CBFB00761864 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A643324220B6CBFB00761864 /* Assets.xcassets */; };
 		A643324620B6CBFB00761864 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A643324420B6CBFB00761864 /* MainMenu.xib */; };
 		A67FABF720B6F7340013A775 /* Ebml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67FABF520B6F7340013A775 /* Ebml.cpp */; };
@@ -23,6 +26,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A627E6C520BC509E002C94E1 /* Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
+		A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
+		A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLRenderer.cpp; sourceTree = "<group>"; };
+		A627E6C920BC64BE002C94E1 /* AbstractView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AbstractView.h; sourceTree = "<group>"; };
+		A627E6D020BC7324002C94E1 /* OpenGLTexture2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLTexture2D.h; sourceTree = "<group>"; };
+		A627E6D120BC7324002C94E1 /* OpenGLContextLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLContextLock.h; sourceTree = "<group>"; };
+		A627E6D220BC7324002C94E1 /* OpenGLShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLShader.h; sourceTree = "<group>"; };
+		A627E6D320BC7324002C94E1 /* OpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGL.h; sourceTree = "<group>"; };
+		A627E6D420BC7324002C94E1 /* OpenGLShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLShader.cpp; sourceTree = "<group>"; };
+		A627E6D520BC7324002C94E1 /* OpenGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLContext.h; sourceTree = "<group>"; };
+		A627E6D720BC73B2002C94E1 /* OpenGLContextLock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLContextLock.cpp; sourceTree = "<group>"; };
 		A643323C20B6CBFB00761864 /* WebM Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WebM Player.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A643324220B6CBFB00761864 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A643324520B6CBFB00761864 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -62,6 +76,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A627E6CF20BC72AB002C94E1 /* OpenGL */ = {
+			isa = PBXGroup;
+			children = (
+				A67FAC1D20B818A30013A775 /* OpenGLProgramVariablesBase.h */,
+				A627E6D320BC7324002C94E1 /* OpenGL.h */,
+				A627E6D520BC7324002C94E1 /* OpenGLContext.h */,
+				A627E6D120BC7324002C94E1 /* OpenGLContextLock.h */,
+				A627E6D420BC7324002C94E1 /* OpenGLShader.cpp */,
+				A627E6D220BC7324002C94E1 /* OpenGLShader.h */,
+				A627E6D020BC7324002C94E1 /* OpenGLTexture2D.h */,
+				A627E6D720BC73B2002C94E1 /* OpenGLContextLock.cpp */,
+			);
+			name = OpenGL;
+			path = ../../Source/OpenGL;
+			sourceTree = SOURCE_ROOT;
+		};
 		A643323320B6CBFB00761864 = {
 			isa = PBXGroup;
 			children = (
@@ -93,6 +123,7 @@
 		A67FABEF20B6ED510013A775 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A627E6CF20BC72AB002C94E1 /* OpenGL */,
 				A67FAC1B20B812E90013A775 /* default.vert */,
 				A67FAC1920B800A80013A775 /* I420toRGBA.frag */,
 				A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */,
@@ -106,10 +137,13 @@
 				A67FAC1120B7189F0013A775 /* Player.cpp */,
 				A67FAC1620B738810013A775 /* VideoDecoder.h */,
 				A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */,
-				A67FAC1D20B818A30013A775 /* OpenGLProgramVariablesBase.h */,
 				A67FAC1E20B819D30013A775 /* WebMPlayerOpenGLProgramVariables.h */,
 				A67FAC1F20B84E140013A775 /* YUVFrame.h */,
 				A67FAC2020B84EBA0013A775 /* YUVFrame.cpp */,
+				A627E6C520BC509E002C94E1 /* Utilities.h */,
+				A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */,
+				A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */,
+				A627E6C920BC64BE002C94E1 /* AbstractView.h */,
 			);
 			name = Source;
 			path = ../../Source;
@@ -201,11 +235,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A67FAC2120B84EBA0013A775 /* YUVFrame.cpp in Sources */,
+				A627E6D820BC73B2002C94E1 /* OpenGLContextLock.cpp in Sources */,
 				A67FAC0A20B712D40013A775 /* WebMPlayerDelegate.m in Sources */,
 				A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */,
 				A67FAC0C20B712D40013A775 /* WebMPlayerOpenGLView.mm in Sources */,
 				A67FAC1220B7189F0013A775 /* Player.cpp in Sources */,
+				A627E6C820BC6498002C94E1 /* OpenGLRenderer.cpp in Sources */,
 				A67FAC0E20B7157C0013A775 /* EbmlParser.cpp in Sources */,
+				A627E6D620BC7324002C94E1 /* OpenGLShader.cpp in Sources */,
 				A67FAC0B20B712D40013A775 /* main.m in Sources */,
 				A67FAC1820B7DFE70013A775 /* VideoDecoder.cpp in Sources */,
 				A67FABF720B6F7340013A775 /* Ebml.cpp in Sources */,

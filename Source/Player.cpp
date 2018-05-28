@@ -23,7 +23,6 @@ void Player::start()
 
 void Player::stop()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     if (decoding_thread_.joinable())
     {
         condition_variable_.notify_one();

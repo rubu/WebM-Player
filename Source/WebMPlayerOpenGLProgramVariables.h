@@ -1,6 +1,7 @@
 #pragma once
 
-#include "OpenGLProgramVariablesBase.h"
+#include "OpenGL/OpenGLProgramVariablesBase.h"
+#include "OpenGL/OpenGLTexture2D.h"
 
 class WebMPlayerOpenGLProgramVariables : public OpenGLProgramVariablesBase<WebMPlayerOpenGLProgramVariables>
 {
@@ -17,14 +18,14 @@ public:
         OPENGL_UNIFORM_VARIABLE(chroma_div_h_, "u_chroma_div_h");
     END_OPENGL_VARIABLES_MAP
     
-private:
+public:
     GLint position_location_;
     GLint texture_coordinates_location_;
     Variable<GLfloat[16]> projection_matrix_;
     Variable<GLfloat[16]> model_view_matrix_;
-    Variable<GLuint> y_texture_;
-    Variable<GLuint> u_texture_;
-    Variable<GLuint> v_texture_;
+    Variable<SingleChannelOpenGLTexture2D> y_texture_;
+    Variable<SingleChannelOpenGLTexture2D> u_texture_;
+    Variable<SingleChannelOpenGLTexture2D> v_texture_;
     Variable<GLfloat> chroma_div_w_;
     Variable<GLfloat> chroma_div_h_;
 };
