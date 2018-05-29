@@ -4,7 +4,7 @@ OpenGLShader::OpenGLShader(GLenum type) : shader_(glCreateShader(type))
 {
     if (shader_ == 0)
     {
-        CHECK_OPENGL_CALL("glCreateShader(%d) failed", type);
+        CHECK_OPENGL("glCreateShader(%d) failed", type);
     }
 }
 
@@ -30,7 +30,7 @@ OpenGLShader compile_shader(GLenum type, const char* source)
 {
     OpenGLShader shader(type);
     glShaderSource(shader, 1, &source, NULL);
-    CHECK_OPENGL_CALL("glShaderSource(%d, 1, \"%s\", NULL) failed", shader, source);
+    CHECK_OPENGL("glShaderSource(%u, 1, \"%s\", NULL) failed", static_cast<unsigned int>(shader), source);
     glCompileShader(shader);
 #if defined(DEBUG)
     GLint shader_compilation_log_length = 0;

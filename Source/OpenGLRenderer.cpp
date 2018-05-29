@@ -34,11 +34,11 @@ static GLuint create_program(const char* fragment_shader_source, const char* ver
 {
     OpenGLShader fragment_shader(compile_shader(GL_FRAGMENT_SHADER, fragment_shader_source)), vertex_shader(compile_shader(GL_VERTEX_SHADER, vertex_shader_source));
     GLuint program = glCreateProgram();
-    CHECK_OPENGL_CALL("glCreateProgram() failed");
+    CHECK_OPENGL("glCreateProgram() failed");
     glAttachShader(program, fragment_shader);
-    CHECK_OPENGL_CALL("glAttachShader(%u, %u) failed", program, fragment_shader);
+    CHECK_OPENGL("glAttachShader(%u, %u) failed", program, static_cast<unsigned int>(fragment_shader));
     glAttachShader(program, vertex_shader);
-    CHECK_OPENGL_CALL("glAttachShader(%u, %u) failed", program, vertex_shader);
+    CHECK_OPENGL("glAttachShader(%u, %u) failed", program, static_cast<unsigned int>(vertex_shader));
     glLinkProgram(program);
 #if defined(DEBUG)
     GLint program_linking_log_length = 0;
@@ -74,11 +74,11 @@ OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, con
         throw std::runtime_error("failed to initialize shader program variables");
     }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
-    CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", index_buffer_);
+    CHECK_OPENGL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", static_cast<unsigned int>(index_buffer_));
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexes_), indexes_, GL_STATIC_DRAW);
-    CHECK_OPENGL_CALL("glBufferData() failed");
+    CHECK_OPENGL("glBufferData() failed");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
+    CHECK_OPENGL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
     glClearColor(0, 0, 0, 1);
 }
 
@@ -117,11 +117,11 @@ void OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
             vertexes_[3].t0 = 0.0f;
 
             glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-            CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", vertex_buffer_);
+            CHECK_OPENGL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", static_cast<unsigned int>(vertex_buffer_));
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes_), vertexes_, GL_STATIC_DRAW);
-            CHECK_OPENGL_CALL("glBufferData() failed");
+            CHECK_OPENGL("glBufferData() failed");
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
+            CHECK_OPENGL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
         }
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         frames_.clear();
@@ -175,32 +175,60 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
         }
     }
     OpenGLContextLock opengl_context_lock(context_);
-    variables_.y_texture_.value().load(frame.y_plane());
-    variables_.u_texture_.value().load(frame.u_plane());
-    variables_.v_texture_.value().load(frame.v_plane());
-    glUseProgram(program_);
-    glUniformMatrix4fv(variables_.projection_matrix_.location(), 1, GL_FALSE, variables_.projection_matrix_.value());
-    glUniformMatrix4fv(variables_.model_view_matrix_.location(), 1, GL_FALSE, variables_.model_view_matrix_.value());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, variables_.y_texture_.value().id());
-    glUniform1i(variables_.y_texture_.location(), 0);
-    glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, variables_.u_texture_.value().id());
-    glUniform1i(variables_.u_texture_.location(), 1);
-    glActiveTexture(GL_TEXTURE0 + 2);
-    glBindTexture(GL_TEXTURE_2D, variables_.v_texture_.value().id());
-    glUniform1i(variables_.v_texture_.value().id(), 2);
-    glUniform1f(variables_.chroma_div_w_.location(), variables_.chroma_div_w_.value());
-    glUniform1f(variables_.chroma_div_h_.location(), variables_.chroma_div_h_.value());
-    glClear(GL_COLOR_BUFFER_BIT);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
-    glVertexAttribPointer(variables_.position_location_, 3, GL_FLOAT, GL_FALSE, sizeof(OpenGLVertexInfo), 0);
-    glEnableVertexAttribArray(variables_.position_location_);
-    glVertexAttribPointer(variables_.texture_coordinates_location_, 2, GL_FLOAT, GL_FALSE, sizeof(OpenGLVertexInfo), reinterpret_cast<const GLvoid*>(12));
-    glEnableVertexAttribArray(variables_.texture_coordinates_location_);
-    glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_SHORT, 0);
-    const auto error = glGetError();
+    try
+    {
+        variables_.y_texture_.value().load(frame.y_plane());
+        variables_.u_texture_.value().load(frame.u_plane());
+        variables_.v_texture_.value().load(frame.v_plane());
+        glUseProgram(program_);
+        CHECK_OPENGL_DEBUG("glUseProgram(%d) failed", program_);
+        glUniformMatrix4fv(variables_.projection_matrix_.location(), 1, GL_FALSE, variables_.projection_matrix_.value());
+        CHECK_OPENGL_DEBUG("glUniformMatrix4fv(%d, ...) failed", variables_.projection_matrix_.location());
+        glUniformMatrix4fv(variables_.model_view_matrix_.location(), 1, GL_FALSE, variables_.model_view_matrix_.value());
+        CHECK_OPENGL_DEBUG("glUniformMatrix4fv(%d, ...) failed", variables_.model_view_matrix_.location());
+        glActiveTexture(GL_TEXTURE0);
+        CHECK_OPENGL_DEBUG("glActiveTexture() failed");
+        glBindTexture(GL_TEXTURE_2D, variables_.y_texture_.value().id());
+        CHECK_OPENGL_DEBUG("glBindTexture() failed");
+        glUniform1i(variables_.y_texture_.location(), 0);
+        CHECK_OPENGL_DEBUG("glUniform1i(%d, 0) failed", variables_.y_texture_.location());
+        glActiveTexture(GL_TEXTURE0 + 1);
+        CHECK_OPENGL_DEBUG("glActiveTexture() failed");
+        glBindTexture(GL_TEXTURE_2D, variables_.u_texture_.value().id());
+        CHECK_OPENGL_DEBUG("glBindTexture() failed");
+        glUniform1i(variables_.u_texture_.location(), 1);
+        CHECK_OPENGL_DEBUG("glUniform1i(%d, 1) failed", variables_.u_texture_.location());
+        glActiveTexture(GL_TEXTURE0 + 2);
+        CHECK_OPENGL_DEBUG("glActiveTexture() failed");
+        glBindTexture(GL_TEXTURE_2D, variables_.v_texture_.value().id());
+        CHECK_OPENGL_DEBUG("glBindTexture() failed");
+        glUniform1i(variables_.v_texture_.location(), 2);
+        CHECK_OPENGL_DEBUG("glUniform1i(%d, 2) failed", variables_.v_texture_.location());
+        glUniform1f(variables_.chroma_div_w_.location(), variables_.chroma_div_w_.value());
+        CHECK_OPENGL_DEBUG("glUniform1f(%d, %u) failed", variables_.chroma_div_w_.location(), variables_.chroma_div_w_.value());
+        glUniform1f(variables_.chroma_div_h_.location(), variables_.chroma_div_h_.value());
+        CHECK_OPENGL_DEBUG("glUniform1f(%d, %u) failed", variables_.chroma_div_h_.location(), variables_.chroma_div_h_.value());
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
+        CHECK_OPENGL_DEBUG("glBindBuffer(GL_ARRAY_BUFFER, %u) failed", static_cast<unsigned int>(vertex_buffer_));
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
+        CHECK_OPENGL_DEBUG("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", static_cast<unsigned int>(index_buffer_));
+        glVertexAttribPointer(variables_.position_location_, 3, GL_FLOAT, GL_FALSE, sizeof(OpenGLVertexInfo), 0);
+        CHECK_OPENGL_DEBUG("glVertexAttribPointer() failed");
+        glEnableVertexAttribArray(variables_.position_location_);
+        CHECK_OPENGL_DEBUG("glEnableVertexAttribArray() failed");
+        glVertexAttribPointer(variables_.texture_coordinates_location_, 2, GL_FLOAT, GL_FALSE, sizeof(OpenGLVertexInfo), reinterpret_cast<const GLvoid*>(12));
+        CHECK_OPENGL_DEBUG("glVertexAttribPointer() failed");
+        glEnableVertexAttribArray(variables_.texture_coordinates_location_);
+        CHECK_OPENGL_DEBUG("glEnableVertexAttribArray() failed");
+        glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_SHORT, 0);
+        CHECK_OPENGL_DEBUG("glDrawElements() failed");
+        CHECK_OPENGL("failed to render frame");
+    }
+    catch (const std::exception& exception)
+    {
+        fprintf(stderr, "%s", exception.what());
+    }
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         frames_.emplace_back(0, std::move(frame));

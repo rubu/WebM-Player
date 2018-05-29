@@ -9,8 +9,12 @@
 
 #endif
 
-#define CHECK_OPENGL_CALL(format, ...) { GLenum error = glGetError(); if (error != GL_NO_ERROR) throw OpenGLCallError(format_message(format "(error %d)").c_str()); }
-
+#define CHECK_OPENGL(format, ...) { GLenum error = glGetError(); if (error != GL_NO_ERROR) throw OpenGLCallError(format_message(format "(error %d)", ##__VA_ARGS__).c_str()); }
+#if defined(_DEBUG) || defined(DEBUG)
+#define CHECK_OPENGL_DEBUG(format, ...) CHECK_OPENGL(format, ##__VA_ARGS__)
+#else
+#define CHECK_OPENGL_DEBUG(format, ...)
+#endif
 
 class OpenGLCallError : public std::exception
 {

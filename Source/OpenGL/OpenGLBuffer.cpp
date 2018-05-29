@@ -5,7 +5,7 @@ OpenGLBuffer::OpenGLBuffer() : buffer_(0)
     glGenBuffers(1, &buffer_);
     if (buffer_ == 0)
     {
-        CHECK_OPENGL_CALL("glGenBuffers() failed");
+        CHECK_OPENGL("glGenBuffers() failed");
     }
 }
 
