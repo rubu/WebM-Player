@@ -6,7 +6,9 @@ template<GLint internal_format, GLint format, GLint type>
 class OpenGLTexture2D
 {
 public:
-    OpenGLTexture2D() : initialized_(false)
+    OpenGLTexture2D() : initialized_(false),
+        width_(0),
+        height_(0)
     {
     }
     virtual ~OpenGLTexture2D()
@@ -34,10 +36,24 @@ public:
         CHECK_OPENGL_CALL("glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) failed");
         glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, NULL);
         CHECK_OPENGL_CALL("glTexImage2D(GL_TEXTURE_2D, 0, %d, %u, %u, 0, %d, %d, NULL) failed", internal_format, width, height, format, type);
+        width_ = width;
+        height_ = height;
+    }
+
+    void load(unsigned char* data)
+    {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, format, type, data);
+    }
+
+    GLuint id()
+    {
+        return texture_id_;
     }
 
 private:
-    std::atomic<bool> initialized_;
+    bool initialized_;
+    unsigned int width_;
+    unsigned int height_;
     GLuint texture_id_;
 };
 

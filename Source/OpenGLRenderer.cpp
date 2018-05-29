@@ -6,9 +6,33 @@ void attribute_load_error_handler(const char* error, void* user_data)
 {
 }
 
-static GLuint CreateProgram(const char* fragment_shader_source, const char* vertex_shader_source)
+static const GLushort indexes_[6] =
 {
-    OpenGLShader fragment_shader(CompileShader(GL_FRAGMENT_SHADER, fragment_shader_source)), vertex_shader(CompileShader(GL_VERTEX_SHADER, vertex_shader_source));
+    0, 1, 2,
+    0, 3, 2,
+};
+
+static void create_orthographic_matrix(float matrix[16], float left, float right, float bottom, float top, float nearZ, float farZ)
+{
+    float ral = right + left;
+    float rsl = right - left;
+    float tab = top + bottom;
+    float tsb = top - bottom;
+    float fan = farZ + nearZ;
+    float fsn = farZ - nearZ;
+    memset(matrix, 0, 16 * sizeof(float));
+    matrix[0] = 2.0f / rsl;
+    matrix[5] = 2.0f / tsb;
+    matrix[10] = -2.0f / fsn;
+    matrix[12] = -ral / rsl;
+    matrix[13] = -tab / tsb;
+    matrix[14] = -fan / fsn;
+    matrix[15] = 1.0f;
+}
+
+static GLuint create_program(const char* fragment_shader_source, const char* vertex_shader_source)
+{
+    OpenGLShader fragment_shader(compile_shader(GL_FRAGMENT_SHADER, fragment_shader_source)), vertex_shader(compile_shader(GL_VERTEX_SHADER, vertex_shader_source));
     GLuint program = glCreateProgram();
     CHECK_OPENGL_CALL("glCreateProgram() failed");
     glAttachShader(program, fragment_shader);
@@ -38,7 +62,8 @@ static GLuint CreateProgram(const char* fragment_shader_source, const char* vert
 
 OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size) : view_(view),
     context_(context),
-    program_(CreateProgram(fragment_shader_source, vertex_shader_source)),
+    program_(create_program(fragment_shader_source, vertex_shader_source)),
+    vertexes_{},
     frame_queue_size_(frame_queue_size),
     first_frame_(true),
     first_frame_host_time_(0),
@@ -48,26 +73,67 @@ OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, con
     {
         throw std::runtime_error("failed to initialize shader program variables");
     }
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
+    CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", index_buffer_);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexes_), indexes_, GL_STATIC_DRAW);
+    CHECK_OPENGL_CALL("glBufferData() failed");
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
     glClearColor(0, 0, 0, 1);
 }
 
 void OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned int height)
 {
-    view_.resize(width, height);
+    try
     {
-        OpenGLContextLock lock(context_);
-        glViewport(0, 0, width, height);
-        variables_.y_texture_.value().initialize(width, height);
-        variables_.u_texture_.value().initialize(width / 2, height);
-        variables_.v_texture_.value().initialize(width / 2, height);
+        view_.resize(width, height);
+        {
+            OpenGLContextLock lock(context_);
+            variables_.y_texture_.value().initialize(width, height);
+            variables_.u_texture_.value().initialize(width / 2, height);
+            variables_.v_texture_.value().initialize(width / 2, height);
+            variables_.chroma_div_h_.value() = variables_.chroma_div_w_.value() = 1.0f;
+            glViewport(0, 0, width, height);
+
+            create_orthographic_matrix(variables_.projection_matrix_.value(), -width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f, 1.0f, -1.0f);
+            
+            GLfloat (&model_view_matrix)[16] = variables_.model_view_matrix_.value();
+            memset(model_view_matrix, 0, 16 * sizeof(float));
+            model_view_matrix[0] = model_view_matrix[5] = model_view_matrix[10] = model_view_matrix[15] = 1.0f;
+            
+
+            vertexes_[0].x = vertexes_[1].x = - (float)width/ 2.0f;
+            vertexes_[2].x = vertexes_[3].x =   (float)width / 2.0f;
+            vertexes_[1].y = vertexes_[2].y = - (float)width / 2.0f;
+            vertexes_[0].y = vertexes_[3].y =   (float)width / 2.0f;
+            
+            vertexes_[0].s0 = 0.0f;
+            vertexes_[0].t0 = 0.0f;
+            vertexes_[1].s0 = 0.0f;
+            vertexes_[1].t0 = 1.0f;
+            vertexes_[2].s0 = 1.0f;
+            vertexes_[2].t0 = 1.0f;
+            vertexes_[3].s0 = 1.0f;
+            vertexes_[3].t0 = 0.0f;
+
+            glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
+            CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, %u) failed", vertex_buffer_);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes_), vertexes_, GL_STATIC_DRAW);
+            CHECK_OPENGL_CALL("glBufferData() failed");
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            CHECK_OPENGL_CALL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
+        }
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        frames_.clear();
+        for (size_t frame_index = 0; frame_index < frame_queue_size_; ++frame_index)
+        {
+            frames_.emplace_back(0, YUVFrame(height, width, width / 2, width / 2));
+        }
+        free_frame_iterator_ = frames_.begin();
     }
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    frames_.clear();
-    for (size_t frame_index = 0; frame_index < frame_queue_size_; ++frame_index)
+    catch (const std::exception& exception)
     {
-        frames_.emplace_back(0, YUVFrame(height, width, width / 2, width / 2));
     }
-    free_frame_iterator_ = frames_.begin();
 }
 
 bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */)
@@ -94,5 +160,49 @@ void OpenGLRenderer::on_exception(const std::exception& exception)
 
 void OpenGLRenderer::render_frame(uint64_t host_time)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    YUVFrame frame;
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        auto& first_frame_entry = frames_.front();
+        if (first_frame_entry.first != 0 && first_frame_entry.first < host_time)
+        {
+            frame = std::move(first_frame_entry.second);
+            frames_.pop_front();
+        }
+        else
+        {
+            return;
+        }
+    }
+    OpenGLContextLock opengl_context_lock(context_);
+    variables_.y_texture_.value().load(frame.y_plane());
+    variables_.u_texture_.value().load(frame.u_plane());
+    variables_.v_texture_.value().load(frame.v_plane());
+    glUseProgram(program_);
+    glUniformMatrix4fv(variables_.projection_matrix_.location(), 1, GL_FALSE, variables_.projection_matrix_.value());
+    glUniformMatrix4fv(variables_.model_view_matrix_.location(), 1, GL_FALSE, variables_.model_view_matrix_.value());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, variables_.y_texture_.value().id());
+    glUniform1i(variables_.y_texture_.location(), 0);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, variables_.u_texture_.value().id());
+    glUniform1i(variables_.u_texture_.location(), 1);
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, variables_.v_texture_.value().id());
+    glUniform1i(variables_.v_texture_.value().id(), 2);
+    glUniform1f(variables_.chroma_div_w_.location(), variables_.chroma_div_w_.value());
+    glUniform1f(variables_.chroma_div_h_.location(), variables_.chroma_div_h_.value());
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
+    glVertexAttribPointer(variables_.position_location_, 3, GL_FLOAT, GL_FALSE, sizeof(OpenGLVertexInfo), 0);
+    glEnableVertexAttribArray(variables_.position_location_);
+    glVertexAttribPointer(variables_.texture_coordinates_location_, 2, GL_FLOAT, GL_FALSE, sizeof(OpenGLVertexInfo), reinterpret_cast<const GLvoid*>(12));
+    glEnableVertexAttribArray(variables_.texture_coordinates_location_);
+    glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_SHORT, 0);
+    const auto error = glGetError();
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        frames_.emplace_back(0, std::move(frame));
+    }
 }

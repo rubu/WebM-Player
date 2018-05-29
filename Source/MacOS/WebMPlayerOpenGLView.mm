@@ -45,6 +45,7 @@ public:
     
     void unlock() override
     {
+        [[view_ openGLContext] flushBuffer];
         [NSOpenGLContext clearCurrentContext];
     }
 

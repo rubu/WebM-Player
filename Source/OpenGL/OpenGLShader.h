@@ -15,5 +15,5 @@ private:
     GLuint shader_;
 };
 
-OpenGLShader CompileShader(GLenum type, const char* source);
+OpenGLShader compile_shader(GLenum type, const char* source);
 

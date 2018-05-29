@@ -26,7 +26,7 @@ OpenGLShader::operator GLuint()
     return shader_;
 }
 
-OpenGLShader CompileShader(GLenum type, const char* source)
+OpenGLShader compile_shader(GLenum type, const char* source)
 {
     OpenGLShader shader(type);
     glShaderSource(shader, 1, &source, NULL);

@@ -27,3 +27,9 @@ public:
 private:
     const std::string error_;
 };
+
+typedef struct
+{
+    float x,y,z;
+    float s0, t0;
+} OpenGLVertexInfo;

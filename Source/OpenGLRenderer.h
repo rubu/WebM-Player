@@ -5,6 +5,7 @@
 #include "WebMPlayerOpenGLProgramVariables.h"
 #include "YUVFrame.h"
 #include "OpenGL/OpenGLContext.h"
+#include "OpenGL/OpenGLBuffer.h"
 
 #include <list>
 class OpenGLRenderer : public Player::IEventListener
@@ -24,6 +25,9 @@ private:
     IAbstractView& view_;
     IOpenGLContext& context_;
     const GLuint program_;
+    OpenGLBuffer vertex_buffer_;
+    OpenGLBuffer index_buffer_;
+    OpenGLVertexInfo vertexes_[4];
     WebMPlayerOpenGLProgramVariables variables_;
     const size_t frame_queue_size_;
     std::recursive_mutex mutex_;
