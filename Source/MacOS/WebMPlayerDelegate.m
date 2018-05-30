@@ -25,6 +25,23 @@
     return YES;
 }
 
+-(BOOL)application:(NSApplication *)sender openFile:(NSString*)filename;
+{
+    if ([filename.pathExtension isEqualToString:@"webm"] == YES)
+    {
+        [self openFile:[NSURL fileURLWithPath:filename]];
+        return YES;
+    }
+    return NO;
+}
+
+-(void)openFile:(NSURL*)fileURL
+{
+    NSArray* subviews = ((NSView*)_window.contentView).subviews;
+    [(WebMPlayerOpenGLView*)subviews[0] playFile:fileURL];
+    [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:fileURL.path]];
+}
+
 - (IBAction)openDocument:(id)sender
 {
     NSOpenPanel* openFilePanel = [[NSOpenPanel alloc] init];
@@ -41,9 +58,7 @@
     {
         NSURL* fileURL = openFilePanel.URLs[0];
         _openFileBaseURL = [fileURL URLByDeletingLastPathComponent];
-        NSArray* subviews = ((NSView*)_window.contentView).subviews;
-        [(WebMPlayerOpenGLView*)subviews[0] playFile:fileURL];
-        [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:fileURL.path]];
+        [self openFile:fileURL];
     }
 }
 

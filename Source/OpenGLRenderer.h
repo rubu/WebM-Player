@@ -17,7 +17,7 @@ public:
     void render_frame(uint64_t host_time);
     
     // Player::IEventListener;
-    void on_video_frame_size_changed(unsigned int width, unsigned int height) override;
+    bool on_video_frame_size_changed(unsigned int width, unsigned int height) override;
     bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */) override;
     void on_exception(const std::exception& exception) override;
 

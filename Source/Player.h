@@ -23,7 +23,7 @@ public:
     public:
         virtual ~IEventListener() = default;
         
-        virtual void on_video_frame_size_changed(unsigned int width, unsigned int height) = 0;
+        virtual bool on_video_frame_size_changed(unsigned int width, unsigned int height) = 0;
         virtual bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */) = 0;
         virtual void on_exception(const std::exception& exception) = 0;
     };
@@ -48,8 +48,9 @@ private:
     const char* file_path_;
     IEventListener* const event_listener_;
     std::atomic<bool> verbose_;
-    std::mutex mutex_;
-    std::condition_variable condition_variable_;
+    std::mutex command_mutex_;
+    std::condition_variable command_condition_variable_;
     Command command_;
+    std::recursive_mutex thread_mutex_;
     std::thread decoding_thread_;
 };

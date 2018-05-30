@@ -4,7 +4,8 @@
 
 @interface WebMPlayerDelegate : NSObject <NSApplicationDelegate>
 
-- (IBAction)openDocument:(id)sender;
+-(IBAction)openDocument:(id)sender;
+-(BOOL)application:(NSApplication *)sender openFile:(NSString*)filename;
 
 @end
 

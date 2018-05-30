@@ -4,6 +4,7 @@
 
 void attribute_load_error_handler(const char* error, void* user_data)
 {
+    fprintf(stderr, "%s", error);
 }
 
 static const GLushort indexes_[6] =
@@ -79,10 +80,12 @@ OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, con
     CHECK_OPENGL("glBufferData() failed");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     CHECK_OPENGL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
+    OpenGLContextLock lock(context_);
     glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned int height)
+bool OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned int height)
 {
     try
     {
@@ -90,8 +93,8 @@ void OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
         {
             OpenGLContextLock lock(context_);
             variables_.y_texture_.value().initialize(width, height);
-            variables_.u_texture_.value().initialize(width / 2, height);
-            variables_.v_texture_.value().initialize(width / 2, height);
+            variables_.u_texture_.value().initialize(width / 2, height / 2);
+            variables_.v_texture_.value().initialize(width / 2, height / 2);
             variables_.chroma_div_h_.value() = variables_.chroma_div_w_.value() = 1.0f;
             glViewport(0, 0, width, height);
 
@@ -131,9 +134,17 @@ void OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
         }
         free_frame_iterator_ = frames_.begin();
     }
+    catch (const ExceptionBase& exception)
+    {
+        fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.error_with_location());
+        return false;
+    }
     catch (const std::exception& exception)
     {
+        fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.what());
+        return false;
     }
+    return true;
 }
 
 bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */)
@@ -177,6 +188,7 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
     OpenGLContextLock opengl_context_lock(context_);
     try
     {
+        glClear(GL_COLOR_BUFFER_BIT);
         variables_.y_texture_.value().load(frame.y_plane());
         variables_.u_texture_.value().load(frame.u_plane());
         variables_.v_texture_.value().load(frame.v_plane());
@@ -221,13 +233,17 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
         CHECK_OPENGL_DEBUG("glVertexAttribPointer() failed");
         glEnableVertexAttribArray(variables_.texture_coordinates_location_);
         CHECK_OPENGL_DEBUG("glEnableVertexAttribArray() failed");
-        glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
         CHECK_OPENGL_DEBUG("glDrawElements() failed");
         CHECK_OPENGL("failed to render frame");
     }
+    catch (const ExceptionBase& exception)
+    {
+        fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.error_with_location());
+    }
     catch (const std::exception& exception)
     {
-        fprintf(stderr, "%s", exception.what());
+        fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.what());
     }
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);

@@ -16,16 +16,17 @@ Player::~Player()
 
 void Player::start()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(thread_mutex_);
     stop();
     decoding_thread_ = std::thread(std::bind(&Player::decoding_thread, this));
 }
 
 void Player::stop()
 {
+    std::lock_guard<std::recursive_mutex> lock(thread_mutex_);
     if (decoding_thread_.joinable())
     {
-        condition_variable_.notify_one();
+        execute_command(Command::Stop);
         decoding_thread_.join();
     }
 }
@@ -34,7 +35,12 @@ void Player::decoding_thread()
 {
     try
     {
-        auto ebml_element_tree = parse_ebml_file(file_path_);
+        auto embl_document = parse_ebml_file(file_path_);
+        const auto& ebml_element_tree = embl_document.elements();
+        if (ebml_element_tree.empty())
+        {
+            return;
+        }
         auto segment = std::find_if(ebml_element_tree.begin(), ebml_element_tree.end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Segment; });
         if (segment == ebml_element_tree.end())
         {
@@ -99,7 +105,10 @@ void Player::decoding_thread()
                 {
  
                 }
-                event_listener_->on_video_frame_size_changed(width, height);
+                if (event_listener_->on_video_frame_size_changed(width, height) == false)
+                {
+                    return;
+                }
                 break;
             }
             track_entry = std::find_if(++track_entry, tracks->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::TrackEntry; });
@@ -179,20 +188,20 @@ void Player::decoding_thread()
 void Player::execute_command(Command command)
 {
     {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::mutex> lock(command_mutex_);
         command_ = command;
     }
-    condition_variable_.notify_one();
+    command_condition_variable_.notify_one();
 }
 
 Player::Command Player::get_next_command(bool wait)
 {
     Command command = Command::None;
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(command_mutex_);
         if (command_ == Command::None && wait)
         {
-            condition_variable_.wait(lock);
+            command_condition_variable_.wait(lock);
         }
         std::swap(command_, command);
     }

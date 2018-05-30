@@ -66,6 +66,7 @@
 		A67FAC1E20B819D30013A775 /* WebMPlayerOpenGLProgramVariables.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebMPlayerOpenGLProgramVariables.h; sourceTree = "<group>"; };
 		A67FAC1F20B84E140013A775 /* YUVFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YUVFrame.h; sourceTree = "<group>"; };
 		A67FAC2020B84EBA0013A775 /* YUVFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = YUVFrame.cpp; sourceTree = "<group>"; };
+		A6C825AE20BEEF5200927088 /* Exception.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +150,7 @@
 				A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */,
 				A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */,
 				A627E6C920BC64BE002C94E1 /* AbstractView.h */,
+				A6C825AE20BEEF5200927088 /* Exception.h */,
 			);
 			name = Source;
 			path = ../../Source;

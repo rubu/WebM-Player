@@ -1,4 +1,5 @@
 #include "Ebml.h"
+#include "EbmlParser.h"
 
 #include <memory>
 #include <stack>
@@ -7,6 +8,16 @@
 #include <sstream>
 #include <ctime>
 #include <algorithm>
+
+EbmlDocument::EbmlDocument(std::unique_ptr<unsigned char[]> storage, std::list<EbmlElement> elements) : storage_(std::move(storage)),
+    elements_(std::move(elements))
+{
+}
+
+const std::list<EbmlElement>& EbmlDocument::elements()
+{
+    return elements_;
+}
 
 enum class EbmlParserState
 {
@@ -23,8 +34,7 @@ struct FileDeleter
 	}
 };
 
-
-std::list<EbmlElement> parse_ebml_file(const char* file_path, bool verbose)
+EbmlDocument parse_ebml_file(const char* file_path, bool verbose)
 {
     std::unique_ptr<FILE, FileDeleter> ebml_file(fopen(file_path, "rb"));
     if (ebml_file == nullptr)
@@ -141,7 +151,8 @@ std::list<EbmlElement> parse_ebml_file(const char* file_path, bool verbose)
     }
     catch (std::exception& exception)
     {
-        std::cout << "Parsing error at offset 0x" << std::hex << file_size - remaining_file_size << ": " << exception.what() << std::endl;
+        std::cerr << "Parsing error at offset 0x" << std::hex << file_size - remaining_file_size << ": " << exception.what() << std::endl;
+        return EbmlDocument();
     }
     while (ebml_element_stack.size() > 0)
     {
@@ -165,5 +176,5 @@ std::list<EbmlElement> parse_ebml_file(const char* file_path, bool verbose)
         }
         std::cout << std::endl;
     }
-    return ebml_element_tree;
+    return EbmlDocument(std::move(ebml_file_contents), std::move(ebml_element_tree));
 }

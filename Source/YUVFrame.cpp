@@ -12,8 +12,8 @@ YUVFrame::YUVFrame(size_t height, size_t y_stride, size_t u_stride, size_t v_str
     u_stride_(u_stride),
     v_stride_(v_stride),
     y_plane_(new unsigned char[height_ * y_stride_]),
-    u_plane_(new unsigned char[height_ * u_stride_]),
-    v_plane_(new unsigned char[height_ * v_stride_])
+    u_plane_(new unsigned char[height_ / 2 * u_stride_]),
+    v_plane_(new unsigned char[height_ /2 * v_stride_])
 {
 }
 
@@ -28,8 +28,8 @@ YUVFrame& YUVFrame::operator=(YUVFrame&& yuv_frame)
 void YUVFrame::load_planes(unsigned char* yuv_planes[3])
 {
     memcpy(y_plane_.get(), yuv_planes[0], height_ * y_stride_);
-    memcpy(u_plane_.get(), yuv_planes[1], height_ * u_stride_);
-    memcpy(v_plane_.get(), yuv_planes[2], height_ * v_stride_);
+    memcpy(u_plane_.get(), yuv_planes[1], height_ / 2 * u_stride_);
+    memcpy(v_plane_.get(), yuv_planes[2], height_ / 2 * v_stride_);
 }
 
 unsigned char* YUVFrame::y_plane()

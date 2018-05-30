@@ -10,6 +10,10 @@ public:
     class Variable
     {
     public:
+        Variable() : location_(-1)
+        {
+        }
+
         GLint& location()
         {
             return location_;

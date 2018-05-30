@@ -64,6 +64,16 @@ private:
 - (void)awakeFromNib
 {
     [super awakeFromNib];
+    NSOpenGLPixelFormatAttribute pixelFormatAttributes[] =
+    {
+      NSOpenGLPFADoubleBuffer,
+      NSOpenGLPFADepthSize, 24,
+      0
+    };
+    NSOpenGLPixelFormat* pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
+    NSOpenGLContext* openGLContext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+    [self setPixelFormat:pixelFormat];
+    [self setOpenGLContext:openGLContext];
     NSString* i420FragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"I420toRGBA" ofType:@"frag"];
     const GLchar* i420FragmentShaderSource = (GLchar *)[[NSString stringWithContentsOfFile:i420FragmentShaderPath encoding:NSASCIIStringEncoding error:nil] cStringUsingEncoding:NSASCIIStringEncoding];
     if (i420FragmentShaderSource == nil)
@@ -76,7 +86,6 @@ private:
     {
         [NSException raise:kFailedToLoadShader format:@"failed to read shader file %@", defaultVertexShaderPath];
     }
-    NSOpenGLContext* openGLContext = [self openGLContext];
     [openGLContext makeCurrentContext];
     try
     {
@@ -106,8 +115,7 @@ private:
 
 -(void) drawRect:(NSRect)dirtyRect
 {
-    [[NSColor blackColor] setFill];
-    NSRectFill(dirtyRect);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 -(void) playFile:(NSURL*)fileURL
