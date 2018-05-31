@@ -4,7 +4,6 @@
 
 #if defined(__APPLE__)
 #include <OpenGL/gl3.h>
-#include <OpenGL/gl.h>
 
 #define CHECK_OPENGL_OBJC(exception, format, ...) { GLenum error = glGetError(); if (error != GL_NO_ERROR) [NSException raise:exception format:[NSString stringWithFormat"(error %d)", __VA_ARGS__, error]]; }
 

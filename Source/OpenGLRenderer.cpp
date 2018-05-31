@@ -98,7 +98,7 @@ bool OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
             variables_.chroma_div_h_.value() = variables_.chroma_div_w_.value() = 1.0f;
             glViewport(0, 0, width, height);
 
-            create_orthographic_matrix(variables_.projection_matrix_.value(), -width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f, 1.0f, -1.0f);
+            create_orthographic_matrix(variables_.projection_matrix_.value(), width / -2.0f, width / 2.0f, height / -2.0f, height / 2.0f, 1.0f, -1.0f);
             
             GLfloat (&model_view_matrix)[16] = variables_.model_view_matrix_.value();
             memset(model_view_matrix, 0, 16 * sizeof(float));
