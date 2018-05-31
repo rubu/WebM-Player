@@ -39,7 +39,6 @@ void Player::start(const char* file_path, IEventListener* event_listener)
 
 void Player::stop()
 {
-    std::lock_guard<std::mutex> lock(command_mutex_);
     if (decoding_thread_.joinable())
     {
         execute_command(Command::Stop);
@@ -160,7 +159,7 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
                     {
                         throw std::runtime_error("lacing is not supported");
                     }
-                    auto pts = (cluster_pts + ntohs(*reinterpret_cast<const short*>(data + track_number_size_length))) * milliseconds_per_tick;
+                    auto pts = (cluster_pts + ntohs(*reinterpret_cast<const short*>(data + track_number_size_length))) * milliseconds_per_tick * 1000000;
                     if (verbose_)
                     {
                         auto milliseconds = pts % 1000;
