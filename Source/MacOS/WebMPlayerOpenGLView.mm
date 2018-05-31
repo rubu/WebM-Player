@@ -58,10 +58,10 @@ private:
     CVDisplayLinkRef _displayLink;
     std::unique_ptr<OpenGLRendererDelegate> _delegate;
     std::unique_ptr<OpenGLRenderer> _renderer;
-    std::unique_ptr<Player> _player;
+    Player _player;
 }
 
-- (void)awakeFromNib
+-(void)awakeFromNib
 {
     [super awakeFromNib];
     NSOpenGLPixelFormatAttribute pixelFormatAttributes[] =
@@ -90,7 +90,7 @@ private:
     try
     {
         _delegate = std::make_unique<OpenGLRendererDelegate>(self);
-        _renderer = std::make_unique<OpenGLRenderer>(*_delegate.get(), *_delegate.get(), i420FragmentShaderSource, defaultVertexShaderSource);
+        _renderer = std::make_unique<OpenGLRenderer>(*_delegate.get(), *_delegate.get(), _player, i420FragmentShaderSource, defaultVertexShaderSource);
     }
     catch (const std::exception& exception)
     {
@@ -108,20 +108,19 @@ private:
     }
 }
 
--(void) dealloc
+-(void)dealloc
 {
     CVDisplayLinkStop(_displayLink);
 }
 
--(void) drawRect:(NSRect)dirtyRect
+-(void)drawRect:(NSRect)dirtyRect
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
--(void) playFile:(NSURL*)fileURL
+-(void)playFile:(NSURL*)fileURL
 {
-    _player = std::make_unique<Player>(fileURL.path.UTF8String, _renderer.get());
-    _player->start();
+    _player.start(fileURL.path.UTF8String, _renderer.get());
 }
 
 -(void)renderFrameForTime:(const CVTimeStamp*)timestamp

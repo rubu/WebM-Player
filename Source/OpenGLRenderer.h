@@ -11,19 +11,20 @@
 class OpenGLRenderer : public Player::IEventListener
 {
 public:
-    OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
+    OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
     
     void initialize();
     void render_frame(uint64_t host_time);
     
     // Player::IEventListener;
     bool on_video_frame_size_changed(unsigned int width, unsigned int height) override;
-    bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */) override;
+    bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) override;
     void on_exception(const std::exception& exception) override;
 
 private:
     IAbstractView& view_;
     IOpenGLContext& context_;
+    Player& player_;
     const GLuint program_;
     OpenGLBuffer vertex_buffer_;
     OpenGLBuffer index_buffer_;

@@ -11,7 +11,7 @@ public:
     public:
         virtual ~IEventListener() = default;
         
-        virtual bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */) = 0;
+        virtual bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) = 0;
     };
     
     VideoDecoder(IEventListener* event_listener);

@@ -50,7 +50,8 @@ bool VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstre
             if (image->fmt == VPX_IMG_FMT_I420)
             {
                 unsigned char* yuv_planes[3] = {image->planes[0], image->planes[1], image->planes[2]};
-                if (event_listener_->on_i420_video_frame_decoded(yuv_planes, pts) == false)
+                size_t strides[3] = { static_cast<size_t>(image->stride[0]), static_cast<size_t>(image->stride[1]), static_cast<size_t>(image->stride[2]) };
+                if (event_listener_->on_i420_video_frame_decoded(yuv_planes, strides, pts) == false)
                 {
                     return false;
                 }

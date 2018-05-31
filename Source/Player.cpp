@@ -2,9 +2,25 @@
 #include "EbmlParser.h"
 #include "VPXVideoDecoder.h"
 
-Player::Player(const char* file_path, IEventListener* event_listener, bool verbose) : file_path_(file_path),
-    event_listener_(event_listener),
-    verbose_(verbose),
+class VideoDecoderDelegate : public VideoDecoder::IEventListener
+{
+public:
+    VideoDecoderDelegate(Player::IEventListener* event_listener) : event_listener_(event_listener)
+    {
+        
+    }
+    
+    // VideoDecoder::IEventListener
+    bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */)
+    {
+        return event_listener_->on_i420_video_frame_decoded(yuv_planes, strides, pts);
+    }
+
+private:
+    Player::IEventListener* const event_listener_;
+};
+
+Player::Player(bool verbose) : verbose_(verbose),
     command_(Command::None)
 {
 }
@@ -14,16 +30,16 @@ Player::~Player()
     stop();
 }
 
-void Player::start()
+void Player::start(const char* file_path, IEventListener* event_listener)
 {
     std::lock_guard<std::recursive_mutex> lock(thread_mutex_);
     stop();
-    decoding_thread_ = std::thread(std::bind(&Player::decoding_thread, this));
+    decoding_thread_ = std::thread(std::bind(&Player::decoding_thread, this, file_path, event_listener));
 }
 
 void Player::stop()
 {
-    std::lock_guard<std::recursive_mutex> lock(thread_mutex_);
+    std::lock_guard<std::mutex> lock(command_mutex_);
     if (decoding_thread_.joinable())
     {
         execute_command(Command::Stop);
@@ -31,11 +47,12 @@ void Player::stop()
     }
 }
 
-void Player::decoding_thread()
+void Player::decoding_thread(const std::string& file_path, IEventListener* event_listener)
 {
     try
     {
-        auto embl_document = parse_ebml_file(file_path_);
+        std::unique_lock<std::mutex> lock(command_mutex_);
+        auto embl_document = parse_ebml_file(file_path.c_str());
         const auto& ebml_element_tree = embl_document.elements();
         if (ebml_element_tree.empty())
         {
@@ -65,6 +82,7 @@ void Player::decoding_thread()
         auto track_entry = std::find_if(tracks->children().begin(), tracks->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::TrackEntry; });
         std::unique_ptr<VideoDecoder> video_decoder;
         unsigned int video_track_number = 0;
+        VideoDecoderDelegate video_decoder_delegate(event_listener);
         while (track_entry != tracks->children().end())
         {
             auto track_number = std::find_if(track_entry->children().begin(), track_entry->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::TrackNumber; });
@@ -95,17 +113,17 @@ void Player::decoding_thread()
                 unsigned int width = std::stoi(pixel_width->value()), height = std::stoi(pixel_height->value());
                 if (codec_id_value == "V_VP8")
                 {
-                    video_decoder = VPXVideoDecoder::CreateVP8VideoDecoder(width, height, this);
+                    video_decoder = VPXVideoDecoder::CreateVP8VideoDecoder(width, height, &video_decoder_delegate);
                 }
                 else if (codec_id_value == "V_VP9")
                 {
-                    video_decoder = VPXVideoDecoder::CreateVP9VideoDecoder(width, height, this);
+                    video_decoder = VPXVideoDecoder::CreateVP9VideoDecoder(width, height, &video_decoder_delegate);
                 }
                 else if (codec_id_value == "V_AV1")
                 {
  
                 }
-                if (event_listener_->on_video_frame_size_changed(width, height) == false)
+                if (event_listener->on_video_frame_size_changed(width, height) == false)
                 {
                     return;
                 }
@@ -153,14 +171,14 @@ void Player::decoding_thread()
                         std::cout << "frame @ " << timestamp << ", size - " << size - track_number_size_length - 3 << std::endl;
                     }
                     bool wait = video_decoder->decode_i420(data + track_number_size_length + 3, size - track_number_size_length - 3, pts) == false;
-                    switch (get_next_command(wait))
+                    switch (get_next_command(lock, wait))
                     {
                         case Command::Stop:
                             return;
                         case Command::Pause:
                             {
                                 Command command;
-                                while ((command = get_next_command(true)) == Command::Pause)
+                                while ((command = get_next_command(lock, true)) == Command::Pause)
                                 {
                                 }
                                 if(command == Command::Stop)
@@ -181,7 +199,7 @@ void Player::decoding_thread()
     }
     catch (const std::exception& exception)
     {
-        event_listener_->on_exception(exception);
+        event_listener->on_exception(exception);
     }
 }
 
@@ -194,21 +212,18 @@ void Player::execute_command(Command command)
     command_condition_variable_.notify_one();
 }
 
-Player::Command Player::get_next_command(bool wait)
+Player::Command Player::get_next_command(std::unique_lock<std::mutex>& lock, bool wait)
 {
     Command command = Command::None;
+    if (command_ == Command::None && wait)
     {
-        std::unique_lock<std::mutex> lock(command_mutex_);
-        if (command_ == Command::None && wait)
-        {
-            command_condition_variable_.wait(lock);
-        }
-        std::swap(command_, command);
+        command_condition_variable_.wait(lock);
     }
+    std::swap(command_, command);
     return command;
 }
 
-bool Player::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */)
+void Player::resume()
 {
-    return event_listener_->on_i420_video_frame_decoded(yuv_planes, pts);
+    execute_command(Command::Resume);
 }

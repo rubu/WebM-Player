@@ -61,8 +61,9 @@ static GLuint create_program(const char* fragment_shader_source, const char* ver
 }
 
 
-OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size) : view_(view),
+OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size) : view_(view),
     context_(context),
+    player_(player),
     program_(create_program(fragment_shader_source, vertex_shader_source)),
     vertexes_{},
     frame_queue_size_(frame_queue_size),
@@ -147,7 +148,7 @@ bool OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
     return true;
 }
 
-bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], uint64_t pts /* nanoseconds */)
+bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (first_frame_)
@@ -159,7 +160,7 @@ bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], u
     if (free_frame_iterator_ != frames_.end())
     {
         free_frame_iterator_->first = pts - first_frame_pts_ + first_frame_host_time_;
-        free_frame_iterator_->second.load_planes(yuv_planes);
+        free_frame_iterator_->second.load_planes(yuv_planes, strides);
         ++free_frame_iterator_;
     }
     return free_frame_iterator_ != frames_.end();
@@ -245,8 +246,21 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
     {
         fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.what());
     }
+    bool resume_player = false;
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
+        if (free_frame_iterator_ == frames_.end())
+        {
+            resume_player = true;
+        }
         frames_.emplace_back(0, std::move(frame));
+        if (resume_player)
+        {
+            --free_frame_iterator_;
+        }
+    }
+    if (resume_player)
+    {
+        player_.resume();
     }
 }
