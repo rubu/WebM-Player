@@ -129,6 +129,7 @@
 		A67FABEF20B6ED510013A775 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A67FABF520B6F7340013A775 /* Ebml.cpp */,
 				A627E6CF20BC72AB002C94E1 /* OpenGL */,
 				A67FAC1B20B812E90013A775 /* default.vert */,
 				A67FAC1920B800A80013A775 /* I420toRGBA.frag */,
@@ -163,7 +164,6 @@
 				A67FAC0520B712D40013A775 /* WebMPlayerDelegate.m */,
 				A67FAC0620B712D40013A775 /* WebMPlayerOpenGLView.h */,
 				A67FAC0920B712D40013A775 /* WebMPlayerOpenGLView.mm */,
-				A67FABF520B6F7340013A775 /* Ebml.cpp */,
 			);
 			name = MacOS;
 			path = ../../Source/MacOS;
