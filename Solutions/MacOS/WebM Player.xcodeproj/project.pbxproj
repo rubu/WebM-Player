@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		39E685E520C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39E685E420C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m */; };
+		39E685E920C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39E685E820C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm */; };
+		39E685ED20C1FF3200DABE20 /* EbmlTree.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39E685EC20C1FF3200DABE20 /* EbmlTree.mm */; };
 		A627E6C820BC6498002C94E1 /* OpenGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */; };
 		A627E6D620BC7324002C94E1 /* OpenGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6D420BC7324002C94E1 /* OpenGLShader.cpp */; };
 		A627E6D820BC73B2002C94E1 /* OpenGLContextLock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6D720BC73B2002C94E1 /* OpenGLContextLock.cpp */; };
@@ -27,6 +30,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		39E685E420C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebMPlayerOpenGLViewController.m; sourceTree = "<group>"; };
+		39E685E620C1F2EE00DABE20 /* WebMPlayerOpenGLViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebMPlayerOpenGLViewController.h; sourceTree = "<group>"; };
+		39E685E820C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebMPlayerEbmlTreeViewController.mm; sourceTree = "<group>"; };
+		39E685EA20C1F9ED00DABE20 /* WebMPlayerEbmlTreeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebMPlayerEbmlTreeViewController.h; sourceTree = "<group>"; };
+		39E685EB20C1FF2400DABE20 /* EbmlTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EbmlTree.h; sourceTree = "<group>"; };
+		39E685EC20C1FF3200DABE20 /* EbmlTree.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EbmlTree.mm; sourceTree = "<group>"; };
 		A627E6C520BC509E002C94E1 /* Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
 		A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLRenderer.cpp; sourceTree = "<group>"; };
@@ -164,6 +173,12 @@
 				A67FAC0520B712D40013A775 /* WebMPlayerDelegate.m */,
 				A67FAC0620B712D40013A775 /* WebMPlayerOpenGLView.h */,
 				A67FAC0920B712D40013A775 /* WebMPlayerOpenGLView.mm */,
+				39E685E420C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m */,
+				39E685E620C1F2EE00DABE20 /* WebMPlayerOpenGLViewController.h */,
+				39E685E820C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm */,
+				39E685EA20C1F9ED00DABE20 /* WebMPlayerEbmlTreeViewController.h */,
+				39E685EB20C1FF2400DABE20 /* EbmlTree.h */,
+				39E685EC20C1FF3200DABE20 /* EbmlTree.mm */,
 			);
 			name = MacOS;
 			path = ../../Source/MacOS;
@@ -241,14 +256,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39E685E520C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m in Sources */,
 				A627E6DB20BC8020002C94E1 /* OpenGLBuffer.cpp in Sources */,
 				A67FAC2120B84EBA0013A775 /* YUVFrame.cpp in Sources */,
 				A627E6D820BC73B2002C94E1 /* OpenGLContextLock.cpp in Sources */,
 				A67FAC0A20B712D40013A775 /* WebMPlayerDelegate.m in Sources */,
+				39E685ED20C1FF3200DABE20 /* EbmlTree.mm in Sources */,
 				A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */,
 				A67FAC0C20B712D40013A775 /* WebMPlayerOpenGLView.mm in Sources */,
 				A67FAC1220B7189F0013A775 /* Player.cpp in Sources */,
 				A627E6C820BC6498002C94E1 /* OpenGLRenderer.cpp in Sources */,
+				39E685E920C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm in Sources */,
 				A67FAC0E20B7157C0013A775 /* EbmlParser.cpp in Sources */,
 				A627E6D620BC7324002C94E1 /* OpenGLShader.cpp in Sources */,
 				A67FAC0B20B712D40013A775 /* main.m in Sources */,
@@ -407,6 +425,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.rubu.WebM-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -423,6 +442,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.rubu.WebM-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};

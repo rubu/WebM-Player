@@ -111,6 +111,7 @@ public:
 	const std::string value() const;
 	const unsigned char* data() const;
 	uint64_t size() const;
+    EbmlElementType type() const;
 
 private:
 	EbmlElementId id_;

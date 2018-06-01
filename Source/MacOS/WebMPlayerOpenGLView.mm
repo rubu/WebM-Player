@@ -1,8 +1,17 @@
 #import "WebMPlayerOpenGLView.h"
+#import "WebMPlayerEbmlTreeViewController.h"
+#import "EbmlTree.h"
+
 #include "../OpenGLRenderer.h"
 
 #define kFailedToLoadShader @"failed to load OpenGL shader source from bundled resources"
 #define kFailedToInitializeOpenGL @"failed to initialize OpenGL renderer"
+
+@interface WebMPlayerOpenGLView ()
+
+@property (weak) IBOutlet WebMPLayerEbmlTreeViewController *ebmlTreeViewController;
+
+@end
 
 CVReturn DisplayLinkOutputCallback(CVDisplayLinkRef displayLink,
                                         const CVTimeStamp *inNow,
@@ -61,17 +70,20 @@ public:
                        });
         return opengl_renderer_.on_video_frame_size_changed(width, height);
     }
+   
     bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) override
     {
         return opengl_renderer_.on_i420_video_frame_decoded(yuv_planes, strides, pts);
     }
+
     void on_ebml_document_ready(const EbmlDocument& ebml_document) override
     {
-        
+        [view_.ebmlTreeViewController setEbmlTree:[[EbmlTree alloc] initWithEbmlDocument:&ebml_document]];
     }
+
     void on_exception(const std::exception& exception) override
     {
-        
+
     }
 
 private:
@@ -134,6 +146,10 @@ private:
             CVDisplayLinkStart(_displayLink);
         }
     }
+}
+
+-(void)resizeRenderArea:(NSSize)renderAreaSize
+{
 }
 
 -(void)dealloc

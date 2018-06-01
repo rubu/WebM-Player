@@ -7,7 +7,7 @@ class EbmlDocument
 public:
     EbmlDocument(std::unique_ptr<unsigned char[]> storage = nullptr, std::list<EbmlElement> elements = std::list<EbmlElement>());
 
-    const std::list<EbmlElement>& elements();
+    const std::list<EbmlElement>& elements() const;
 
 private:
     std::unique_ptr<unsigned char[]> storage_;

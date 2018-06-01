@@ -17,6 +17,7 @@ public:
     void render_frame(uint64_t host_time);
     
     bool on_video_frame_size_changed(unsigned int width, unsigned int height);
+    bool on_render_aread_size_changed(unsigned int width, unsigned int height);
     bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */);
 
 private:

@@ -540,3 +540,8 @@ uint64_t EbmlElement::size() const
 {
 	return size_;
 }
+
+EbmlElementType EbmlElement::type() const
+{
+    return type_;
+}

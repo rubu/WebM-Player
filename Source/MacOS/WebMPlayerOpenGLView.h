@@ -6,5 +6,5 @@
 
 -(void)playFile:(NSURL*)fileURL;
 -(void)renderFrameForTime:(const CVTimeStamp*)timestamp;
-
+-(void)resizeRenderArea:(NSSize)renderAreaSize;
 @end

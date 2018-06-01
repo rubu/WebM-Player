@@ -14,7 +14,7 @@ EbmlDocument::EbmlDocument(std::unique_ptr<unsigned char[]> storage, std::list<E
 {
 }
 
-const std::list<EbmlElement>& EbmlDocument::elements()
+const std::list<EbmlElement>& EbmlDocument::elements() const
 {
     return elements_;
 }

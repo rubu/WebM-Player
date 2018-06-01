@@ -85,6 +85,11 @@ OpenGLRenderer::OpenGLRenderer(IOpenGLContext& context, Player& player, const ch
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
+bool OpenGLRenderer::on_render_aread_size_changed(unsigned int width, unsigned int height)
+{
+    return true;
+}
+
 bool OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned int height)
 {
     try
