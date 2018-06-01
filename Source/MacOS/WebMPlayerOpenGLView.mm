@@ -16,27 +16,14 @@ CVReturn DisplayLinkOutputCallback(CVDisplayLinkRef displayLink,
     return kCVReturnSuccess;
 }
 
-class OpenGLRendererDelegate : public IAbstractView, public IOpenGLContext
+class OpenGLContext : public IOpenGLContext
 {
 public:
-    OpenGLRendererDelegate(WebMPlayerOpenGLView* view) : view_(view)
+    OpenGLContext(WebMPlayerOpenGLView* view) : view_(view)
     {
-    
-    }
-
-    // IAbstractView
-    void resize(unsigned int width, unsigned int height) override
-    {
-        dispatch_async(dispatch_get_main_queue(), ^
-                       {
-                           NSRect windowFrame = view_.window.frame;
-                           windowFrame.size.width = width;
-                           windowFrame.size.height = height;
-                           [view_.window setFrame:windowFrame display:YES];
-                       });
     }
     
-    // public IOpenGLContext
+    // IOpenGLContext
     void lock() override
     {
         NSOpenGLContext* openGLContext = [view_ openGLContext];
@@ -53,11 +40,51 @@ private:
     WebMPlayerOpenGLView* const view_;
 };
 
+class PlayerEventListener : public Player::IEventListener
+{
+public:
+    PlayerEventListener(OpenGLRenderer& opengl_renderer, WebMPlayerOpenGLView* view) : opengl_renderer_(opengl_renderer),
+        view_(view)
+    {
+    
+    }
+
+    // Player::IEventListener
+    bool on_video_frame_size_changed(unsigned int width, unsigned int height) override
+    {
+        dispatch_async(dispatch_get_main_queue(), ^
+                       {
+                           NSRect windowFrame = view_.window.frame;
+                           windowFrame.size.width = width;
+                           windowFrame.size.height = height;
+                           [view_.window setFrame:windowFrame display:YES];
+                       });
+        return opengl_renderer_.on_video_frame_size_changed(width, height);
+    }
+    bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) override
+    {
+        return opengl_renderer_.on_i420_video_frame_decoded(yuv_planes, strides, pts);
+    }
+    void on_ebml_document_ready(const EbmlDocument& ebml_document) override
+    {
+        
+    }
+    void on_exception(const std::exception& exception) override
+    {
+        
+    }
+
+private:
+    OpenGLRenderer& opengl_renderer_;
+    WebMPlayerOpenGLView* const view_;
+};
+
 @implementation WebMPlayerOpenGLView
 {
     CVDisplayLinkRef _displayLink;
-    std::unique_ptr<OpenGLRendererDelegate> _delegate;
-    std::unique_ptr<OpenGLRenderer> _renderer;
+    std::unique_ptr<OpenGLRenderer> _openglRenderer;
+    std::unique_ptr<OpenGLContext> _openglContext;
+    std::unique_ptr<PlayerEventListener> _playerEventListener;
     Player _player;
 }
 
@@ -89,13 +116,14 @@ private:
     [openGLContext makeCurrentContext];
     try
     {
-        _delegate = std::make_unique<OpenGLRendererDelegate>(self);
-        _renderer = std::make_unique<OpenGLRenderer>(*_delegate.get(), *_delegate.get(), _player, i420FragmentShaderSource, defaultVertexShaderSource);
+        _openglContext = std::make_unique<OpenGLContext>(self);
+        _openglRenderer = std::make_unique<OpenGLRenderer>(*_openglContext.get(), _player, i420FragmentShaderSource, defaultVertexShaderSource);
     }
     catch (const std::exception& exception)
     {
         [NSException raise:kFailedToInitializeOpenGL format:@"%s", exception.what()];
     }
+    _playerEventListener = std::make_unique<PlayerEventListener>(*_openglRenderer.get(), self);
     [NSOpenGLContext clearCurrentContext];
     CVReturn result = CVDisplayLinkCreateWithCGDisplay(CGMainDisplayID(), &_displayLink);
     if(result == kCVReturnSuccess)
@@ -120,11 +148,11 @@ private:
 
 -(void)playFile:(NSURL*)fileURL
 {
-    _player.start(fileURL.path.UTF8String, _renderer.get());
+    _player.start(fileURL.path.UTF8String, _playerEventListener.get());
 }
 
 -(void)renderFrameForTime:(const CVTimeStamp*)timestamp
 {
-    _renderer->render_frame(timestamp->hostTime);
+    _openglRenderer->render_frame(timestamp->hostTime);
 }
 @end

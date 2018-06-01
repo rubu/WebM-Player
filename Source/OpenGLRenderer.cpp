@@ -61,8 +61,7 @@ static GLuint create_program(const char* fragment_shader_source, const char* ver
 }
 
 
-OpenGLRenderer::OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size) : view_(view),
-    context_(context),
+OpenGLRenderer::OpenGLRenderer(IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size) : context_(context),
     player_(player),
     program_(create_program(fragment_shader_source, vertex_shader_source)),
     vertexes_{},
@@ -90,7 +89,6 @@ bool OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
 {
     try
     {
-        view_.resize(width, height);
         {
             OpenGLContextLock lock(context_);
             variables_.y_texture_.value().initialize(width, height);
@@ -164,10 +162,6 @@ bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], s
         ++free_frame_iterator_;
     }
     return free_frame_iterator_ != frames_.end();
-}
-
-void OpenGLRenderer::on_exception(const std::exception& exception)
-{
 }
 
 void OpenGLRenderer::render_frame(uint64_t host_time)

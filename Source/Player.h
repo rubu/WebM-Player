@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VideoDecoder.h"
+#include "EbmlParser.h"
 
 #include <thread>
 #include <mutex>
@@ -25,6 +26,7 @@ public:
         
         virtual bool on_video_frame_size_changed(unsigned int width, unsigned int height) = 0;
         virtual bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) = 0;
+        virtual void on_ebml_document_ready(const EbmlDocument& ebml_document) = 0;
         virtual void on_exception(const std::exception& exception) = 0;
     };
 

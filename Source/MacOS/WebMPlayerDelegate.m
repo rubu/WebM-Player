@@ -3,7 +3,8 @@
 
 @interface WebMPlayerDelegate ()
 
-@property (weak) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSWindow *playerWindow;
+@property (weak) IBOutlet NSWindow *ebmlTreeWindow;
 @end
 
 @implementation WebMPlayerDelegate
@@ -37,7 +38,7 @@
 
 -(void)openFile:(NSURL*)fileURL
 {
-    NSArray* subviews = ((NSView*)_window.contentView).subviews;
+    NSArray* subviews = ((NSView*)_playerWindow.contentView).subviews;
     [(WebMPlayerOpenGLView*)subviews[0] playFile:fileURL];
     [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:fileURL.path]];
 }

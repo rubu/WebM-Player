@@ -8,21 +8,18 @@
 #include "OpenGL/OpenGLBuffer.h"
 
 #include <list>
-class OpenGLRenderer : public Player::IEventListener
+class OpenGLRenderer
 {
 public:
-    OpenGLRenderer(IAbstractView& view, IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
+    OpenGLRenderer(IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
     
     void initialize();
     void render_frame(uint64_t host_time);
     
-    // Player::IEventListener;
-    bool on_video_frame_size_changed(unsigned int width, unsigned int height) override;
-    bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) override;
-    void on_exception(const std::exception& exception) override;
+    bool on_video_frame_size_changed(unsigned int width, unsigned int height);
+    bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */);
 
 private:
-    IAbstractView& view_;
     IOpenGLContext& context_;
     Player& player_;
     const GLuint program_;

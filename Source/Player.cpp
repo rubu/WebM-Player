@@ -51,8 +51,9 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
     try
     {
         std::unique_lock<std::mutex> lock(command_mutex_);
-        auto embl_document = parse_ebml_file(file_path.c_str());
-        const auto& ebml_element_tree = embl_document.elements();
+        auto ebml_document = parse_ebml_file(file_path.c_str());
+        event_listener->on_ebml_document_ready(ebml_document);
+        const auto& ebml_element_tree = ebml_document.elements();
         if (ebml_element_tree.empty())
         {
             return;

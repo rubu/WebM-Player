@@ -136,7 +136,6 @@
 				A67FAC1420B738570013A775 /* VPXVideoDecoder.h */,
 				A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */,
 				A67FAC0420B712BB0013A775 /* MacOS */,
-				A67FABF520B6F7340013A775 /* Ebml.cpp */,
 				A67FABF620B6F7340013A775 /* Ebml.h */,
 				A67FAC0F20B715B10013A775 /* EbmlParser.h */,
 				A67FAC1020B7187F0013A775 /* Player.h */,
@@ -164,6 +163,7 @@
 				A67FAC0520B712D40013A775 /* WebMPlayerDelegate.m */,
 				A67FAC0620B712D40013A775 /* WebMPlayerOpenGLView.h */,
 				A67FAC0920B712D40013A775 /* WebMPlayerOpenGLView.mm */,
+				A67FABF520B6F7340013A775 /* Ebml.cpp */,
 			);
 			name = MacOS;
 			path = ../../Source/MacOS;
