@@ -2,6 +2,8 @@
 
 #include "Ebml.h"
 
+#include <memory>
+
 class EbmlDocument
 {
 public:
@@ -14,4 +16,8 @@ private:
     std::list<EbmlElement> elements_;
 };
 
+#if defined(_WIN32)
+EbmlDocument parse_ebml_file(const wchar_t* file_path, bool verbose = false);
+#else
 EbmlDocument parse_ebml_file(const char* file_path, bool verbose = false);
+#endif

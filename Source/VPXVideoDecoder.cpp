@@ -38,7 +38,7 @@ VPXVideoDecoder::VPXVideoDecoder(vpx_codec_ctx_t codec_context, IEventListener* 
 {
 }
 
-bool VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length, uint64_t pts /* nanoseconds */)
+bool VPXVideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length, uint64_t pts /* microseconds */)
 {
     auto vpx_error = vpx_codec_decode(&codec_context_, bitstream, bitstream_length, nullptr, 0);
     if (vpx_error == VPX_CODEC_OK)

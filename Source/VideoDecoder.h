@@ -17,7 +17,7 @@ public:
     VideoDecoder(IEventListener* event_listener);
     virtual ~VideoDecoder() = default;
     
-    virtual bool decode_i420(const unsigned char* bitstream, size_t bitstream_length, uint64_t pts /* nanoseconds */) = 0;
+    virtual bool decode_i420(const unsigned char* bitstream, size_t bitstream_length, uint64_t pts /* microseconds */) = 0;
     
 protected:
     IEventListener* event_listener_;

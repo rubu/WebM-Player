@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdarg>
 
 #if defined(__APPLE__)
 #include <mach/mach_time.h>
@@ -50,4 +51,14 @@ static uint64_t get_host_time(uint64_t absolute_time = mach_absolute_time())
 
 static const unsigned int host_timescale = 1000000000;
 
+#elif defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+static uint64_t absolute_time_in_microseconds()
+{
+	FILETIME system_time{};
+	GetSystemTimeAsFileTime(&system_time);
+	return (static_cast<uint64_t>(system_time.dwHighDateTime) << 32 | system_time.dwLowDateTime) / 10;
+}
 #endif

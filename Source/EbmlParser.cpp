@@ -1,5 +1,6 @@
 #include "Ebml.h"
 #include "EbmlParser.h"
+#include "Utilities.h"
 
 #include <memory>
 #include <stack>
@@ -34,12 +35,26 @@ struct FileDeleter
 	}
 };
 
+#if defined(_WIN32)
+EbmlDocument parse_ebml_file(const wchar_t* file_path, bool verbose)
+#else
 EbmlDocument parse_ebml_file(const char* file_path, bool verbose)
+#endif
 {
+#if defined(_WIN32)
+	FILE* file = nullptr;
+	_wfopen_s(&file, file_path, L"rb");
+	std::unique_ptr<FILE, FileDeleter> ebml_file(file);
+#else
     std::unique_ptr<FILE, FileDeleter> ebml_file(fopen(file_path, "rb"));
+#endif
     if (ebml_file == nullptr)
     {
-        throw std::runtime_error(std::string("could not open file ").append(file_path));
+#if defined(_WIN32)
+        throw std::runtime_error(format_message("could not open file %ls", file_path));
+#else
+		throw std::runtime_error(format_message("could not open file %s", file_path));
+#endif
     }
     fseek(ebml_file.get(), 0L, SEEK_END);
     size_t file_size = ftell(ebml_file.get()), remaining_file_size = file_size;
@@ -47,7 +62,11 @@ EbmlDocument parse_ebml_file(const char* file_path, bool verbose)
     std::unique_ptr<unsigned char[]> ebml_file_contents(new unsigned char[file_size]);
     if (fread(ebml_file_contents.get(), 1, file_size, ebml_file.get()) != file_size)
     {
-        throw std::runtime_error(std::string("could not read ").append(std::to_string(file_size)).append(" bytes from file ").append(file_path));
+#if defined(_WIN32)
+        throw std::runtime_error(format_message("could not read %zu bytes from file %ls", file_size, file_path));
+#else
+		throw std::runtime_error(format_message("could not read %zu bytes from file %s", file_size, file_path));
+#endif
     }
     EbmlParserState ebml_parser_state = EbmlParserState::ParseElementId;
     std::stack<EbmlElement> ebml_element_stack;

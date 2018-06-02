@@ -3,6 +3,11 @@
 #include "VPXVideoDecoder.h"
 #include "AV1VideoDecoder.h"
 
+#include <algorithm>
+#if defined(_WIN32)
+#include <WinSock2.h>
+#endif
+
 class VideoDecoderDelegate : public VideoDecoder::IEventListener
 {
 public:
@@ -21,6 +26,7 @@ private:
     Player::IEventListener* const event_listener_;
 };
 
+
 Player::Player(bool verbose) : verbose_(verbose),
     command_(Command::None)
 {
@@ -31,7 +37,11 @@ Player::~Player()
     stop();
 }
 
+#if defined(_WIN32)
+void Player::start(const wchar_t* file_path, IEventListener* event_listener)
+#else
 void Player::start(const char* file_path, IEventListener* event_listener)
+#endif
 {
     std::lock_guard<std::recursive_mutex> lock(thread_mutex_);
     stop();
@@ -47,7 +57,11 @@ void Player::stop()
     }
 }
 
+#if defined(_WIN32)
+void Player::decoding_thread(const std::wstring& file_path, IEventListener* event_listener)
+#else
 void Player::decoding_thread(const std::string& file_path, IEventListener* event_listener)
+#endif
 {
     try
     {
@@ -168,7 +182,11 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
                         auto seconds = ((pts - milliseconds) % 60000) / 1000;
                         auto minutes = ((pts - milliseconds - seconds * 1000) % 3600000) / 60000;
                         auto hours = (pts - milliseconds - seconds * 1000 - minutes * 3600000) / 3600000;
+#if defined(_WIN32)
+						sprintf_s(timestamp, "%02u:%02u:%02u.%03u", hours, minutes, seconds, milliseconds);
+#else
                         sprintf(timestamp, "%02u:%02u:%02u.%03u", hours, minutes, seconds, milliseconds);
+#endif
                         std::cout << "frame @ " << timestamp << ", size - " << size - track_number_size_length - 3 << std::endl;
                     }
                     bool wait = video_decoder->decode_i420(data + track_number_size_length + 3, size - track_number_size_length - 3, pts) == false;

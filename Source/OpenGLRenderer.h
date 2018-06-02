@@ -14,7 +14,8 @@ public:
     OpenGLRenderer(IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
     
     void initialize();
-    bool on_video_frame_size_changed(unsigned int width, unsigned int height);
+    // Player::IEventListener;
+	bool on_video_frame_size_changed(unsigned int width, unsigned int height);
     bool on_render_aread_size_changed(unsigned int width, unsigned int height);
     bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */);
     void render_frame(uint64_t host_time);

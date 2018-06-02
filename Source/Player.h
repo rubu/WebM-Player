@@ -35,12 +35,20 @@ public:
     ~Player();
 
     void pause();
+#if defined(_WIN32)
+	void start(const wchar_t* file_path, IEventListener* event_listener);
+#else
     void start(const char* file_path, IEventListener* event_listener);
+#endif
     void resume();
     void stop();
 
 private:
+#if defined(_WIN32)
+	void decoding_thread(const std::wstring& file_path, IEventListener* event_listener);
+#else
     void decoding_thread(const std::string& file_path, IEventListener* event_listener);
+#endif
     void execute_command(Command command);
     Command get_next_command(std::unique_lock<std::mutex>& lock, bool wait);
 
