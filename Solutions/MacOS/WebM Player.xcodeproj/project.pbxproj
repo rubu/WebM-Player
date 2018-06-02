@@ -10,6 +10,7 @@
 		39E685E520C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39E685E420C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m */; };
 		39E685E920C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39E685E820C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm */; };
 		39E685ED20C1FF3200DABE20 /* EbmlTree.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39E685EC20C1FF3200DABE20 /* EbmlTree.mm */; };
+		39E685F020C2156F00DABE20 /* AV1VideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 39E685EF20C2156F00DABE20 /* AV1VideoDecoder.cpp */; };
 		A627E6C820BC6498002C94E1 /* OpenGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */; };
 		A627E6D620BC7324002C94E1 /* OpenGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6D420BC7324002C94E1 /* OpenGLShader.cpp */; };
 		A627E6D820BC73B2002C94E1 /* OpenGLContextLock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A627E6D720BC73B2002C94E1 /* OpenGLContextLock.cpp */; };
@@ -36,6 +37,8 @@
 		39E685EA20C1F9ED00DABE20 /* WebMPlayerEbmlTreeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebMPlayerEbmlTreeViewController.h; sourceTree = "<group>"; };
 		39E685EB20C1FF2400DABE20 /* EbmlTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EbmlTree.h; sourceTree = "<group>"; };
 		39E685EC20C1FF3200DABE20 /* EbmlTree.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EbmlTree.mm; sourceTree = "<group>"; };
+		39E685EE20C2154000DABE20 /* AV1VideoDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AV1VideoDecoder.h; sourceTree = "<group>"; };
+		39E685EF20C2156F00DABE20 /* AV1VideoDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AV1VideoDecoder.cpp; sourceTree = "<group>"; };
 		A627E6C520BC509E002C94E1 /* Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
 		A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLRenderer.cpp; sourceTree = "<group>"; };
@@ -160,6 +163,8 @@
 				A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */,
 				A627E6C920BC64BE002C94E1 /* AbstractView.h */,
 				A6C825AE20BEEF5200927088 /* Exception.h */,
+				39E685EE20C2154000DABE20 /* AV1VideoDecoder.h */,
+				39E685EF20C2156F00DABE20 /* AV1VideoDecoder.cpp */,
 			);
 			name = Source;
 			path = ../../Source;
@@ -264,6 +269,7 @@
 				39E685ED20C1FF3200DABE20 /* EbmlTree.mm in Sources */,
 				A67FAC1520B738570013A775 /* VPXVideoDecoder.cpp in Sources */,
 				A67FAC0C20B712D40013A775 /* WebMPlayerOpenGLView.mm in Sources */,
+				39E685F020C2156F00DABE20 /* AV1VideoDecoder.cpp in Sources */,
 				A67FAC1220B7189F0013A775 /* Player.cpp in Sources */,
 				A627E6C820BC6498002C94E1 /* OpenGLRenderer.cpp in Sources */,
 				39E685E920C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm in Sources */,
@@ -421,8 +427,16 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"../../Dependencies/MacOS/libvpx-1.7.0/include",
+					"../../Dependencies/MacOS/av1-265d15d46455ab4e208d3f9baaa840e05bd025fc/include",
+				);
 				INFOPLIST_FILE = "WebM Player/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"../../Dependencies/MacOS/libvpx-1.7.0/lib",
+					"../../Dependencies/MacOS/av1-265d15d46455ab4e208d3f9baaa840e05bd025fc/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.rubu.WebM-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -438,8 +452,16 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"../../Dependencies/MacOS/libvpx-1.7.0/include",
+					"../../Dependencies/MacOS/av1-265d15d46455ab4e208d3f9baaa840e05bd025fc/include",
+				);
 				INFOPLIST_FILE = "WebM Player/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"../../Dependencies/MacOS/libvpx-1.7.0/lib",
+					"../../Dependencies/MacOS/av1-265d15d46455ab4e208d3f9baaa840e05bd025fc/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.rubu.WebM-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

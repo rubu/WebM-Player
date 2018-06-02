@@ -67,7 +67,7 @@ std::string get_ebml_element_name(EbmlElementId ebml_element_id)
 	case EbmlElementId::MuxingApp:
 		return "MuxingApp";
 	case EbmlElementId::WritingApp:
-		return "WritinApp";
+		return "WritingApp";
 	case EbmlElementId::Cluster:
 		return "Cluster";
 	case EbmlElementId::Timecode:

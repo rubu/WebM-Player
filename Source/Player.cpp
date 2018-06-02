@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "EbmlParser.h"
 #include "VPXVideoDecoder.h"
+#include "AV1VideoDecoder.h"
 
 class VideoDecoderDelegate : public VideoDecoder::IEventListener
 {
