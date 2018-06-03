@@ -437,6 +437,14 @@
 					"../../Dependencies/MacOS/libvpx-1.7.0/lib",
 					"../../Dependencies/MacOS/av1-265d15d46455ab4e208d3f9baaa840e05bd025fc/lib",
 				);
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_objc_readClassPair,
+					"-lvpx",
+					"-laom",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.rubu.WebM-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -461,6 +469,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"../../Dependencies/MacOS/libvpx-1.7.0/lib",
 					"../../Dependencies/MacOS/av1-265d15d46455ab4e208d3f9baaa840e05bd025fc/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_objc_readClassPair,
+					"-lvpx",
+					"-laom",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.rubu.WebM-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";

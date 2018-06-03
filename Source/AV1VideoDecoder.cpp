@@ -21,5 +21,27 @@ AV1VideoDecoder::AV1VideoDecoder(unsigned int width, unsigned int height, IEvent
 
 bool AV1VideoDecoder::decode_i420(const unsigned char* bitstream, size_t bitstream_length, uint64_t pts /* nanoseconds */)
 {
+    auto aom_error = aom_codec_decode(&codec_context_, bitstream, bitstream_length, nullptr);
+    if (aom_error == AOM_CODEC_OK)
+    {
+        aom_codec_iter_t iterator = nullptr;
+        aom_image_t* image = nullptr;
+        while ((image = aom_codec_get_frame(&codec_context_, &iterator)) != nullptr)
+        {
+            if (image->fmt == AOM_IMG_FMT_I420)
+            {
+                unsigned char* yuv_planes[3] = {image->planes[0], image->planes[1], image->planes[2]};
+                size_t strides[3] = { static_cast<size_t>(image->stride[0]), static_cast<size_t>(image->stride[1]), static_cast<size_t>(image->stride[2]) };
+                if (event_listener_->on_i420_video_frame_decoded(yuv_planes, strides, pts) == false)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                throw std::runtime_error("aom_codec_get_frame() did not return a I420 frame");
+            }
+        }
+    }
     return true;
 }

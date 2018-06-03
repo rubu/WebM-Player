@@ -122,7 +122,7 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
                 }
                 else if (codec_id_value == "V_AV1")
                 {
- 
+                    video_decoder = std::make_unique<AV1VideoDecoder>(width, height, &video_decoder_delegate);
                 }
                 if (event_listener->on_video_frame_size_changed(width, height) == false)
                 {

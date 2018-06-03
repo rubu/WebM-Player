@@ -144,6 +144,10 @@ std::string get_ebml_element_name(EbmlElementId ebml_element_id)
 		return "CueBlockNumber";
 	case EbmlElementId::Position:
 		return "Position";
+	case EbmlElementId::DisplayWidth:
+		return "DisplayWidth";
+	case EbmlElementId::DisplayHeight:
+		return "DisplayHeight";
 	default:
 		return "<unknown element>";
 	}
@@ -198,6 +202,8 @@ EbmlElementType get_ebml_element_type(EbmlElementId ebml_element_id)
 	case EbmlElementId::CueRefTime:
 	case EbmlElementId::CueBlockNumber:
 	case EbmlElementId::Position:
+    case EbmlElementId::DisplayWidth:
+    case EbmlElementId::DisplayHeight:
 		return EbmlElementType::UnsignedInteger;
 	case EbmlElementId::DocType:
 	case EbmlElementId::CodecID:
@@ -371,11 +377,13 @@ EbmlElementId read_ebml_element_id(unsigned char* data, size_t& available_data_l
 	case EbmlElementId::CueRefTime:
 	case EbmlElementId::CueBlockNumber:
 	case EbmlElementId::Position:
+    case EbmlElementId::DisplayWidth:
+    case EbmlElementId::DisplayHeight:
 		return static_cast<EbmlElementId>(ebml_element_id);
 	default:
 	{
 		std::stringstream error;
-		error << "unknown element id (0x" << std::hex << htonl(ebml_element_id) << ")";
+		error << "unknown element id (0x" << std::hex << ebml_element_id << ")";
 		throw std::runtime_error(error.str());
 	}
 	}

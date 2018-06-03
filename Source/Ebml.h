@@ -71,6 +71,8 @@ enum class EbmlElementId
 	CueRefTime = 0x96,
 	CueBlockNumber = 0x5378,
 	Position = 0xa7,
+    DisplayWidth = 0x54b0,
+    DisplayHeight = 0x54ba
 };
 
 std::string get_ebml_element_name(EbmlElementId ebml_element_id);
