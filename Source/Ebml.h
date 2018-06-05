@@ -2,6 +2,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
@@ -312,6 +313,8 @@ public:
 	const unsigned char* data() const;
 	uint64_t size() const;
     EbmlElementType type() const;
+    const EbmlElement* first_child(EbmlElementId id) const;
+    std::vector<const EbmlElement*> children(EbmlElementId id) const;
 
 private:
 	EbmlElementId id_;

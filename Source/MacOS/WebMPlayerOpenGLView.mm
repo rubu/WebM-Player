@@ -59,6 +59,11 @@ public:
     }
 
     // Player::IEventListener
+    void set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator) override
+    {
+        opengl_renderer_.set_timescale(timescale_numerator, timescale_denominator);
+    }
+
     bool on_video_frame_size_changed(unsigned int width, unsigned int height) override
     {
         dispatch_async(dispatch_get_main_queue(), ^
@@ -164,6 +169,7 @@ private:
 
 -(void)playFile:(NSURL*)fileURL
 {
+    _openglRenderer->reset();
     _player.start(fileURL.path.UTF8String, _playerEventListener.get());
 }
 

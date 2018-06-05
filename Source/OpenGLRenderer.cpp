@@ -2,6 +2,8 @@
 #include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLContextLock.h"
 
+#define DEBUG_PTS
+
 void attribute_load_error_handler(const char* error, void* user_data)
 {
     fprintf(stderr, "%s", error);
@@ -68,7 +70,8 @@ OpenGLRenderer::OpenGLRenderer(IOpenGLContext& context, Player& player, const ch
     frame_queue_size_(frame_queue_size),
     first_frame_(true),
     first_frame_host_time_(0),
-    first_frame_pts_(0)
+    first_frame_pts_(0),
+    timescale_(0)
 {
     if (variables_.initialize(program_, attribute_load_error_handler, this) == false)
     {
@@ -151,22 +154,49 @@ bool OpenGLRenderer::on_video_frame_size_changed(unsigned int width, unsigned in
     return true;
 }
 
-bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */)
+bool OpenGLRenderer::on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (first_frame_)
     {
-        first_frame_host_time_ = mach_absolute_time_to_nanoseconds();
+        first_frame_host_time_ = get_host_time();
         first_frame_pts_ = pts;
         first_frame_ = false;
+#if defined(DEBUG_PTS)
+        printf("%s(%d): first frame host time - %llu\n" ,__FILE__, __LINE__, first_frame_host_time_);
+#endif
     }
     if (free_frame_iterator_ != frames_.end())
     {
-        free_frame_iterator_->first = pts - first_frame_pts_ + first_frame_host_time_;
+        free_frame_iterator_->first = (pts - first_frame_pts_) * timescale_ + first_frame_host_time_;
+#if defined(DEBUG_PTS)
+        printf("%s(%d): host time for frame pts %llu is  %llu\n" ,__FILE__, __LINE__, pts, free_frame_iterator_->first);
+#endif
         free_frame_iterator_->second.load_planes(yuv_planes, strides);
         ++free_frame_iterator_;
     }
     return free_frame_iterator_ != frames_.end();
+}
+
+void OpenGLRenderer::reset()
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    first_frame_ = true;
+    first_frame_host_time_ = 0;
+    first_frame_pts_ = 0;
+}
+
+void OpenGLRenderer::set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator)
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    if (host_timescale % timescale_denominator == 0)
+    {
+        timescale_ = timescale_numerator * (host_timescale / timescale_denominator);
+    }
+    else
+    {
+        timescale_ = host_timescale * (timescale_numerator * 1.0f / timescale_denominator);
+    }
 }
 
 void OpenGLRenderer::render_frame(uint64_t host_time)
@@ -177,6 +207,9 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
         auto& first_frame_entry = frames_.front();
         if (first_frame_entry.first != 0 && first_frame_entry.first < host_time)
         {
+#if defined(DEBUG_PTS)
+            printf("%s(%d): rendering frame with pts %llu at host time %llu\n" ,__FILE__, __LINE__, first_frame_entry.first, host_time);
+#endif
             frame = std::move(first_frame_entry.second);
             frames_.pop_front();
         }

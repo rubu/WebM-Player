@@ -410,14 +410,20 @@ std::string get_ebml_element_value(EbmlElementId id, EbmlElementType type, unsig
 	{
 		switch (id)
 		{
-		case EbmlElementId::SimpleBlock:
-		{
-			size_t track_number_size_length;
-			auto track_number = get_ebml_element_size(data, static_cast<size_t>(size), track_number_size_length);
-			char buffer[56];
-			sprintf(buffer, "track %" PRIu64 ", timecode %d, flags 0x%02x", track_number, ntohs(*reinterpret_cast<short*>(data + track_number_size_length)), *(data + track_number_size_length + 2));
-			return std::string(buffer);
-		}
+            case EbmlElementId::SimpleBlock:
+            {
+                size_t track_number_size_length;
+                auto track_number = get_ebml_element_size(data, static_cast<size_t>(size), track_number_size_length);
+                char buffer[56];
+                sprintf(buffer, "track %" PRIu64 ", timecode %d, flags 0x%02x", track_number, ntohs(*reinterpret_cast<short*>(data + track_number_size_length)), *(data + track_number_size_length + 2));
+                return std::string(buffer);
+            }
+            case EbmlElementId::SeekID:
+            {
+                size_t available_data_length = size, id_size;
+                EbmlElementId id = read_ebml_element_id(data, available_data_length, id_size);
+                return std::to_string(static_cast<unsigned int>(id));
+            }
 		}
 	}
 	default:
@@ -506,3 +512,27 @@ EbmlElementType EbmlElement::type() const
 {
     return type_;
 }
+
+const EbmlElement* EbmlElement::first_child(EbmlElementId id) const
+{
+    auto first_child = std::find_if(children_.begin(), children_.end(), [id](const EbmlElement& child) { return child.id() == id; });
+    if (first_child != children_.end())
+    {
+        return &(*first_child);
+    }
+    return nullptr;
+}
+
+std::vector<const EbmlElement*> EbmlElement::children(EbmlElementId id) const
+{
+    std::vector<const EbmlElement*> children;
+    for (const auto& child : children_)
+    {
+        if (child.id() == id)
+        {
+            children.emplace_back(&child);
+        }
+    }
+    return children;
+}
+

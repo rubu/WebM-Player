@@ -154,6 +154,10 @@ EbmlDocument parse_ebml_file(const char* file_path, bool verbose)
         std::cerr << "Parsing error at offset 0x" << std::hex << file_size - remaining_file_size << ": " << exception.what() << std::endl;
         return EbmlDocument();
     }
+    if (remaining_file_size)
+    {
+        int i = 3;
+    }
     while (ebml_element_stack.size() > 0)
     {
         EbmlElement parent = ebml_element_stack.top();
@@ -165,6 +169,25 @@ EbmlDocument parse_ebml_file(const char* file_path, bool verbose)
         else
         {
             ebml_element_stack.top().add_child(parent);
+        }
+    }
+    for (const auto& ebml_element : ebml_element_tree)
+    {
+        const auto seek_heads = ebml_element.children(EbmlElementId::SeekHead);
+        for (const auto& seek_head : seek_heads)
+        {
+            const auto& seeks =seek_head->children(EbmlElementId::Seek);
+            for (const auto& seek : seeks)
+            {
+                const auto* seek_id = seek->first_child(EbmlElementId::SeekID);
+                if (seek_id)
+                {
+                    const auto* ebml_element_descriptor = get_ebml_element_descriptor(static_cast<EbmlElementId>(std::stoi(seek_id->value())));
+                    if (ebml_element_descriptor)
+                    {
+                    }
+                }
+            }
         }
     }
     if (verbose)

@@ -38,7 +38,7 @@ static inline std::string format_message(const char* format, ...)
 }
 
 #if defined(__APPLE__)
-static uint64_t mach_absolute_time_to_nanoseconds(uint64_t absolute_time = mach_absolute_time())
+static uint64_t get_host_time(uint64_t absolute_time = mach_absolute_time())
 {
     static mach_timebase_info_data_t timebase_info {0, 0};
     if (timebase_info.denom == 0)
@@ -47,5 +47,7 @@ static uint64_t mach_absolute_time_to_nanoseconds(uint64_t absolute_time = mach_
     }
     return absolute_time * timebase_info.numer / timebase_info.denom;
 }
+
+static const unsigned int host_timescale = 1000000000;
 
 #endif

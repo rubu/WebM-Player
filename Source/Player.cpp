@@ -74,7 +74,7 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
         {
             throw std::runtime_error("Info does not contain a TimecodeScale element");
         }
-        unsigned int milliseconds_per_tick = std::stoi(timecode_scale->value()) / 1000000;
+        event_listener->set_timescale(std::stoi(timecode_scale->value()), 1000000000);
         auto tracks = std::find_if(segment->children().begin(), segment->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Tracks; });
         if (tracks == segment->children().end())
         {
@@ -161,7 +161,7 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
                     {
                         throw std::runtime_error("lacing is not supported");
                     }
-                    auto pts = (cluster_pts + ntohs(*reinterpret_cast<const short*>(data + track_number_size_length))) * milliseconds_per_tick * 1000000;
+                    auto pts = cluster_pts + ntohs(*reinterpret_cast<const short*>(data + track_number_size_length));
                     if (verbose_)
                     {
                         auto milliseconds = pts % 1000;
