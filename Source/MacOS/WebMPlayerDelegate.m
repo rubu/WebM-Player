@@ -29,7 +29,7 @@
 
 -(BOOL)application:(NSApplication *)sender openFile:(NSString*)filename;
 {
-    if ([filename.pathExtension isEqualToString:@"webm"] == YES)
+    if ([filename.pathExtension isEqualToString:@"webm"] == YES || [filename.pathExtension isEqualToString:@"mkv"] == YES)
     {
         [self openFile:[NSURL fileURLWithPath:filename]];
         return YES;
@@ -46,7 +46,7 @@
 - (IBAction)openDocument:(id)sender
 {
     NSOpenPanel* openFilePanel = [[NSOpenPanel alloc] init];
-    openFilePanel.allowedFileTypes = [NSArray arrayWithObject:@"webm"];
+    openFilePanel.allowedFileTypes = [NSArray arrayWithObjects:@"webm", @"mkv", nil];
     openFilePanel.canChooseDirectories = NO;
     openFilePanel.canChooseFiles = YES;
     openFilePanel.allowsMultipleSelection = NO;

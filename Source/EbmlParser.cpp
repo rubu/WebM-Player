@@ -53,7 +53,7 @@ EbmlDocument parse_ebml_file(const char* file_path, bool verbose)
     std::stack<EbmlElement> ebml_element_stack;
     std::stack<uint64_t> ebml_element_size_stack;
     std::list<EbmlElement> ebml_element_tree;
-    EbmlElementId current_ebml_element_id = EbmlElementId::Ebml;
+    EbmlElementId current_ebml_element_id = EbmlElementId::EBML;
     EbmlElementType current_ebml_element_type = EbmlElementType::Unknown;
     uint64_t current_ebml_element_size = 0;
     ebml_element_size_stack.push(file_size);
