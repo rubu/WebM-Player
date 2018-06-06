@@ -1,7 +1,17 @@
 #include "Player.h"
 #include "EbmlParser.h"
+#if defined(__APPLE__)
+#define HAVE_VPX
+#define HAVE_AV1
+#elif defined(_WIN32)
+#define HAVE_VPX
+#endif
+#if defined(HAVE_VPX)
 #include "VPXVideoDecoder.h"
+#endif
+#if defined(HAVE_AV1)
 #include "AV1VideoDecoder.h"
+#endif
 
 #include <algorithm>
 #if defined(_WIN32)
@@ -26,6 +36,34 @@ private:
     Player::IEventListener* const event_listener_;
 };
 
+enum class VideoCodecType
+{
+	Unknown,
+	VP8,
+	VP9,
+	AV1
+};
+
+VideoCodecType video_codec_type_from_string(const std::string& video_codec_id_value)
+{
+#if defined(HAVE_VPX)
+	if (video_codec_id_value == "V_VP8")
+	{
+		return VideoCodecType::VP8;
+	}
+	if (video_codec_id_value == "V_VP9")
+	{
+		return VideoCodecType::VP9;
+	}
+#endif
+#if defined(HAVE_AV1)
+	if (codec_id_value == "V_AV1")
+	{
+		return VideoCodecType::AV1;
+	}
+#endif
+	return VideoCodecType::Unknown;
+}
 
 Player::Player(bool verbose) : verbose_(verbose),
     command_(Command::None)
@@ -126,18 +164,23 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
                     throw std::runtime_error("Video element does not contain a PixelHeight child element");
                 }
                 unsigned int width = std::stoi(pixel_width->value()), height = std::stoi(pixel_height->value());
-                if (codec_id_value == "V_VP8")
-                {
-                    video_decoder = VPXVideoDecoder::CreateVP8VideoDecoder(width, height, &video_decoder_delegate);
-                }
-                else if (codec_id_value == "V_VP9")
-                {
-                    video_decoder = VPXVideoDecoder::CreateVP9VideoDecoder(width, height, &video_decoder_delegate);
-                }
-                else if (codec_id_value == "V_AV1")
-                {
-                    video_decoder = std::make_unique<AV1VideoDecoder>(width, height, &video_decoder_delegate);
-                }
+				auto video_codec_type = video_codec_type_from_string(codec_id_value);
+				switch(video_codec_type)
+				{
+#if defined(HAVE_VPX)
+				case VideoCodecType::VP8:
+					video_decoder = VPXVideoDecoder::CreateVP8VideoDecoder(width, height, &video_decoder_delegate);
+					break;
+				case VideoCodecType::VP9:
+					video_decoder = VPXVideoDecoder::CreateVP8VideoDecoder(width, height, &video_decoder_delegate);
+					break;
+#endif
+#if defined(HAVE_AV1)
+				case VideoCodecType::AV1:
+					video_decoder = std::make_unique<AV1VideoDecoder>(width, height, &video_decoder_delegate);
+					break;
+#endif
+				}
                 if (event_listener->on_video_frame_size_changed(width, height) == false)
                 {
                     return;

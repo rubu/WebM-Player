@@ -44,7 +44,9 @@ LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wparam, LPAR
 }
 
 PlayerWindow::PlayerWindow(HINSTANCE hInstance) : window_(NULL),
-	menu_(NULL)
+	menu_(NULL),
+	hdc_(NULL),
+	hglrc_(NULL)
 {
 	WNDCLASS window_class = { 0 };
 	window_class.lpfnWndProc = window_procedure;
@@ -143,12 +145,12 @@ void PlayerWindow::play_file(const wchar_t* file_path)
 
 void PlayerWindow::lock()
 {
-	wglMakeCurrent(hdc_, hglrc_);
+	CHECK(wglMakeCurrent(hdc_, hglrc_), "wglMakeCurrent(0x%p, 0x%p) failed with %d", hdc_, hglrc_, GetLastError());
 }
 
 void PlayerWindow::unlock()
 {
-
+	CHECK(wglDeleteContext(hglrc_), "wglDeleteContext(0x%p, 0x%p) failed with %d", hglrc_, GetLastError());
 }
 
 bool PlayerWindow::on_video_frame_size_changed(unsigned int width, unsigned int height)
@@ -167,6 +169,11 @@ void PlayerWindow::on_ebml_document_ready(const EbmlDocument& ebml_document)
 }
 
 void PlayerWindow::on_exception(const std::exception& exception)
+{
+
+}
+
+void PlayerWindow::set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator)
 {
 
 }

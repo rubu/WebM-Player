@@ -24,6 +24,7 @@ public:
 	bool on_i420_video_frame_decoded(unsigned char* yuv_planes[3], size_t strides[3], uint64_t pts /* nanoseconds */) override;
 	void on_ebml_document_ready(const EbmlDocument& ebml_document) override;
 	void on_exception(const std::exception& exception) override;
+	void set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator) override;
 
 private:
 	HWND window_;

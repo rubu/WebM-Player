@@ -55,10 +55,12 @@ static const unsigned int host_timescale = 1000000000;
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-static uint64_t absolute_time_in_microseconds()
+static uint64_t get_host_time()
 {
 	FILETIME system_time{};
 	GetSystemTimeAsFileTime(&system_time);
-	return (static_cast<uint64_t>(system_time.dwHighDateTime) << 32 | system_time.dwLowDateTime) / 10;
+	return (static_cast<uint64_t>(system_time.dwHighDateTime) << 32 | system_time.dwLowDateTime);
 }
+
+static const unsigned int host_timescale = 10000000;
 #endif

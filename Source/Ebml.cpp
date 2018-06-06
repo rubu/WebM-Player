@@ -1,6 +1,8 @@
 #include "Ebml.h"
 
 #include <inttypes.h>
+#include <algorithm>
+
 #if defined(_WIN32)
 #include <Winsock2.h>
 #else
@@ -422,12 +424,13 @@ std::string get_ebml_element_value(EbmlElementId id, EbmlElementType type, unsig
 #endif
 			return std::string(buffer);
 		}
-        case EbmlElementId::SeekID:
-        {
-            size_t available_data_length = size, id_size;
-            EbmlElementId id = read_ebml_element_id(data, available_data_length, id_size);
-            return std::to_string(static_cast<unsigned int>(id));
-        }
+		case EbmlElementId::SeekID:
+		{
+			size_t available_data_length = size, id_size;
+			EbmlElementId id = read_ebml_element_id(data, available_data_length, id_size);
+			return std::to_string(static_cast<unsigned int>(id));
+		}
+		}
 	}
 	default:
 		return "<cannot parse the content of this element>";

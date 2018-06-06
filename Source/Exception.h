@@ -27,3 +27,4 @@ private:
     const std::string error_with_location_;
 };
 
+#define CHECK(x, format, ...) if ((x) == false) throw ExceptionBase(__FILE__, __LINE__, format_message(format, __VA_ARGS__));
