@@ -57,7 +57,7 @@ VideoCodecType video_codec_type_from_string(const std::string& video_codec_id_va
 	}
 #endif
 #if defined(HAVE_AV1)
-	if (codec_id_value == "V_AV1")
+	if (video_codec_id_value == "V_AV1")
 	{
 		return VideoCodecType::AV1;
 	}
@@ -193,9 +193,9 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
         {
             throw std::runtime_error("no video track found");
         }
-        auto cluster = std::find_if(segment->children().begin(), segment->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Cluster; });
+        auto clusters = segment->descendants(EbmlElementId::Cluster);
         char timestamp[13] = { 0 };
-        while (cluster != segment->children().end())
+        for(const auto& cluster : clusters)
         {
             auto timecode = std::find_if(cluster->children().begin(), cluster->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Timecode; });
             if (timecode == (cluster->children().end()))
@@ -256,7 +256,6 @@ void Player::decoding_thread(const std::string& file_path, IEventListener* event
                 }
                 simple_block = std::find_if(++simple_block, cluster->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::SimpleBlock; });
             }
-            cluster = std::find_if(++cluster, segment->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Cluster; });
         }
     }
     catch (const std::exception& exception)

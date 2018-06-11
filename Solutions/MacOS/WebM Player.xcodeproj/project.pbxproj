@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		39175CAF20C9C8150025B6FA /* AV1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 39175CAE20C9C8150025B6FA /* AV1.cpp */; };
 		39E685E520C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39E685E420C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m */; };
 		39E685E920C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39E685E820C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm */; };
 		39E685ED20C1FF3200DABE20 /* EbmlTree.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39E685EC20C1FF3200DABE20 /* EbmlTree.mm */; };
@@ -31,6 +32,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		39175CAD20C9C8010025B6FA /* AV1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AV1.h; sourceTree = "<group>"; };
+		39175CAE20C9C8150025B6FA /* AV1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AV1.cpp; sourceTree = "<group>"; };
+		39175CB020C9C86D0025B6FA /* Endianness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Endianness.h; sourceTree = "<group>"; };
 		39E685E420C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebMPlayerOpenGLViewController.m; sourceTree = "<group>"; };
 		39E685E620C1F2EE00DABE20 /* WebMPlayerOpenGLViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebMPlayerOpenGLViewController.h; sourceTree = "<group>"; };
 		39E685E820C1F9DD00DABE20 /* WebMPlayerEbmlTreeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebMPlayerEbmlTreeViewController.mm; sourceTree = "<group>"; };
@@ -141,30 +145,33 @@
 		A67FABEF20B6ED510013A775 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				A67FABF520B6F7340013A775 /* Ebml.cpp */,
-				A627E6CF20BC72AB002C94E1 /* OpenGL */,
+				A627E6C920BC64BE002C94E1 /* AbstractView.h */,
+				39175CAE20C9C8150025B6FA /* AV1.cpp */,
+				39175CAD20C9C8010025B6FA /* AV1.h */,
+				39E685EF20C2156F00DABE20 /* AV1VideoDecoder.cpp */,
+				39E685EE20C2154000DABE20 /* AV1VideoDecoder.h */,
 				A67FAC1B20B812E90013A775 /* default.vert */,
+				A67FABF520B6F7340013A775 /* Ebml.cpp */,
+				A67FABF620B6F7340013A775 /* Ebml.h */,
+				A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */,
+				A67FAC0F20B715B10013A775 /* EbmlParser.h */,
+				39175CB020C9C86D0025B6FA /* Endianness.h */,
+				A6C825AE20BEEF5200927088 /* Exception.h */,
 				A67FAC1920B800A80013A775 /* I420toRGBA.frag */,
+				A67FAC0420B712BB0013A775 /* MacOS */,
+				A627E6CF20BC72AB002C94E1 /* OpenGL */,
+				A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */,
+				A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */,
+				A67FAC1120B7189F0013A775 /* Player.cpp */,
+				A67FAC1020B7187F0013A775 /* Player.h */,
+				A627E6C520BC509E002C94E1 /* Utilities.h */,
+				A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */,
+				A67FAC1620B738810013A775 /* VideoDecoder.h */,
 				A67FAC1320B738570013A775 /* VPXVideoDecoder.cpp */,
 				A67FAC1420B738570013A775 /* VPXVideoDecoder.h */,
-				A67FAC0D20B7157C0013A775 /* EbmlParser.cpp */,
-				A67FAC0420B712BB0013A775 /* MacOS */,
-				A67FABF620B6F7340013A775 /* Ebml.h */,
-				A67FAC0F20B715B10013A775 /* EbmlParser.h */,
-				A67FAC1020B7187F0013A775 /* Player.h */,
-				A67FAC1120B7189F0013A775 /* Player.cpp */,
-				A67FAC1620B738810013A775 /* VideoDecoder.h */,
-				A67FAC1720B7DFE70013A775 /* VideoDecoder.cpp */,
 				A67FAC1E20B819D30013A775 /* WebMPlayerOpenGLProgramVariables.h */,
-				A67FAC1F20B84E140013A775 /* YUVFrame.h */,
 				A67FAC2020B84EBA0013A775 /* YUVFrame.cpp */,
-				A627E6C520BC509E002C94E1 /* Utilities.h */,
-				A627E6C620BC6489002C94E1 /* OpenGLRenderer.h */,
-				A627E6C720BC6498002C94E1 /* OpenGLRenderer.cpp */,
-				A627E6C920BC64BE002C94E1 /* AbstractView.h */,
-				A6C825AE20BEEF5200927088 /* Exception.h */,
-				39E685EE20C2154000DABE20 /* AV1VideoDecoder.h */,
-				39E685EF20C2156F00DABE20 /* AV1VideoDecoder.cpp */,
+				A67FAC1F20B84E140013A775 /* YUVFrame.h */,
 			);
 			name = Source;
 			path = ../../Source;
@@ -261,6 +268,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39175CAF20C9C8150025B6FA /* AV1.cpp in Sources */,
 				39E685E520C1F2DC00DABE20 /* WebMPlayerOpenGLViewController.m in Sources */,
 				A627E6DB20BC8020002C94E1 /* OpenGLBuffer.cpp in Sources */,
 				A67FAC2120B84EBA0013A775 /* YUVFrame.cpp in Sources */,

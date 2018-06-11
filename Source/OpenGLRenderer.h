@@ -21,6 +21,10 @@ public:
     void render_frame(uint64_t host_time);
     void reset();
     void set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator);
+    void render_current_frame();
+
+private:
+    void render_frame(YUVFrame& frame);
 
 private:
     IOpenGLContext& context_;
@@ -38,4 +42,5 @@ private:
     unsigned int timescale_;
     std::list<std::pair<uint64_t, YUVFrame>> frames_;
     std::list<std::pair<uint64_t, YUVFrame>>::iterator free_frame_iterator_;
+    YUVFrame current_frame_;
 };

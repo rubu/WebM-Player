@@ -1,16 +1,8 @@
 #include "Ebml.h"
+#include "Endianness.h"
 
 #include <inttypes.h>
 #include <algorithm>
-
-#if defined(_WIN32)
-#include <Winsock2.h>
-#else
-#include <CoreFoundation/CoreFoundation.h>
-#define ntohf(x) CFConvertFloat32SwappedToHost({(x)})
-#define ntohd(x) CFConvertDoubleSwappedToHost({(x)})
-#define ntohll CFSwapInt64BigToHost
-#endif
 
 static EbmlElementDescriptor ebml_element_descriptors[] =
 {
@@ -531,7 +523,13 @@ const EbmlElement* EbmlElement::first_child(EbmlElementId id) const
 
 std::vector<const EbmlElement*> EbmlElement::children(EbmlElementId id) const
 {
-    std::vector<const EbmlElement*> children;
+    std::vector<const EbmlElement*> result;
+    children(result, id);
+    return result;
+}
+
+void EbmlElement::children(std::vector<const EbmlElement*>& children, EbmlElementId id) const
+{
     for (const auto& child : children_)
     {
         if (child.id() == id)
@@ -539,6 +537,20 @@ std::vector<const EbmlElement*> EbmlElement::children(EbmlElementId id) const
             children.emplace_back(&child);
         }
     }
-    return children;
 }
 
+std::vector<const EbmlElement*> EbmlElement::descendants(EbmlElementId id) const
+{
+    std::vector<const EbmlElement*> result;
+    descendants(result, id);
+    return result;
+}
+
+void EbmlElement::descendants(std::vector<const EbmlElement*>& descendants, EbmlElementId id) const
+{
+    children(descendants, id);
+    for (const auto& child  : children_)
+    {
+        child.descendants(descendants, id);
+    }
+}

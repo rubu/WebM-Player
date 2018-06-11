@@ -2,6 +2,7 @@
 
 #include "Utilities.h"
 
+#include <cstdio>
 #include <stdexcept>
 
 class ExceptionBase : public std::exception
@@ -28,3 +29,13 @@ private:
 };
 
 #define CHECK(x, format, ...) if ((x) == false) throw ExceptionBase(__FILE__, __LINE__, format_message(format, __VA_ARGS__));
+
+#if defined(_DEBUG) || defined(DEBUG)
+#if defined(_WIN32)
+#include <crtdbg.h>
+
+#define Assert(x)  { _ASSERTE(x); }
+#elif defined(__APPLE__) 
+#define Assert(x) if ((x) == false) { fprintf(stderr, "expression \"%s\" at %s(%d) evaluated to false\n", #x, __FILE__, __LINE__); raise(SIGTRAP); }
+#endif
+#endif

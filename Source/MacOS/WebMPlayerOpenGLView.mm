@@ -3,6 +3,7 @@
 #import "EbmlTree.h"
 
 #include "../OpenGLRenderer.h"
+#include "../OpenGL/OpenGLContextLock.h"
 
 #define kFailedToLoadShader @"failed to load OpenGL shader source from bundled resources"
 #define kFailedToInitializeOpenGL @"failed to initialize OpenGL renderer"
@@ -35,6 +36,7 @@ public:
     // IOpenGLContext
     void lock() override
     {
+        mutex_.lock();
         NSOpenGLContext* openGLContext = [view_ openGLContext];
         [openGLContext makeCurrentContext];
     }
@@ -43,9 +45,11 @@ public:
     {
         [[view_ openGLContext] flushBuffer];
         [NSOpenGLContext clearCurrentContext];
+        mutex_.unlock();
     }
 
 private:
+    std::mutex mutex_;
     WebMPlayerOpenGLView* const view_;
 };
 
@@ -164,7 +168,7 @@ private:
 
 -(void)drawRect:(NSRect)dirtyRect
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    _openglRenderer->render_current_frame();
 }
 
 -(void)playFile:(NSURL*)fileURL

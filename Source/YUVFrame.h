@@ -12,6 +12,7 @@ public:
 
     YUVFrame& operator=(YUVFrame&& yuv_frame) = default;
     
+    bool is_empty() const;
     void load_planes(unsigned char* yuv_planes[3], size_t strides[3]);
     unsigned char* y_plane();
     unsigned char* u_plane();

@@ -315,6 +315,9 @@ public:
     EbmlElementType type() const;
     const EbmlElement* first_child(EbmlElementId id) const;
     std::vector<const EbmlElement*> children(EbmlElementId id) const;
+    void children(std::vector<const EbmlElement*>& children, EbmlElementId id) const;
+    std::vector<const EbmlElement*> descendants(EbmlElementId id) const;
+    void descendants(std::vector<const EbmlElement*>& descendants, EbmlElementId id) const;
 
 private:
 	EbmlElementId id_;

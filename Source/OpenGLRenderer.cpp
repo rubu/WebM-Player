@@ -71,7 +71,8 @@ OpenGLRenderer::OpenGLRenderer(IOpenGLContext& context, Player& player, const ch
     first_frame_(true),
     first_frame_host_time_(0),
     first_frame_pts_(0),
-    timescale_(0)
+    timescale_(0),
+    free_frame_iterator_(frames_.end())
 {
     if (variables_.initialize(program_, attribute_load_error_handler, this) == false)
     {
@@ -184,6 +185,7 @@ void OpenGLRenderer::reset()
     first_frame_ = true;
     first_frame_host_time_ = 0;
     first_frame_pts_ = 0;
+    free_frame_iterator_ = frames_.end();
 }
 
 void OpenGLRenderer::set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator)
@@ -218,10 +220,47 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
             return;
         }
     }
+    {
+        OpenGLContextLock opengl_context_lock(context_);
+        std::swap(frame, current_frame_);
+        render_frame(current_frame_);
+    }
+    if (frame.is_empty())
+    {
+        return;
+    }
+    bool resume_player = false;
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        if (free_frame_iterator_ == frames_.end())
+        {
+            resume_player = true;
+        }
+        frames_.emplace_back(0, std::move(frame));
+        if (resume_player)
+        {
+            --free_frame_iterator_;
+        }
+    }
+    if (resume_player)
+    {
+        player_.resume();
+    }
+}
+
+void OpenGLRenderer::render_current_frame()
+{
     OpenGLContextLock opengl_context_lock(context_);
+    render_frame(current_frame_);
+}
+
+void OpenGLRenderer::render_frame(YUVFrame& frame)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (frame.is_empty())
+        return;
     try
     {
-        glClear(GL_COLOR_BUFFER_BIT);
         variables_.y_texture_.value().load(frame.y_plane());
         variables_.u_texture_.value().load(frame.u_plane());
         variables_.v_texture_.value().load(frame.v_plane());
@@ -277,22 +316,5 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
     catch (const std::exception& exception)
     {
         fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.what());
-    }
-    bool resume_player = false;
-    {
-        std::lock_guard<std::recursive_mutex> lock(mutex_);
-        if (free_frame_iterator_ == frames_.end())
-        {
-            resume_player = true;
-        }
-        frames_.emplace_back(0, std::move(frame));
-        if (resume_player)
-        {
-            --free_frame_iterator_;
-        }
-    }
-    if (resume_player)
-    {
-        player_.resume();
     }
 }

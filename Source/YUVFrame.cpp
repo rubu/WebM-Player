@@ -34,6 +34,11 @@ YUVFrame::YUVFrame(size_t height, size_t y_stride, size_t u_stride, size_t v_str
 {
 }
 
+bool YUVFrame::is_empty() const
+{
+    return height_ == 0;
+}
+
 void YUVFrame::load_planes(unsigned char* yuv_planes[3], size_t strides[3])
 {
     load_plane(yuv_planes[0], strides[0], y_plane(), y_stride_, height_);
