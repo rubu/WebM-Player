@@ -1,4 +1,5 @@
 #include "PlayerWindow.h"
+#include "DeviceContext.h"
 #include "resource.h"
 
 #include <atlbase.h>
@@ -24,7 +25,7 @@ LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wparam, LPAR
 		{
 			CREATESTRUCT* creation_parameters = reinterpret_cast<CREATESTRUCT*>(lparam);
 			auto* player_window = reinterpret_cast<PlayerWindow*>(creation_parameters->lpCreateParams);
-			player_window->initialize();
+			player_window->initialize(window);
 		}
 		break;
 	case WM_CLOSE:
@@ -37,6 +38,12 @@ LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wparam, LPAR
 			player_window->open_file();
 		}
 		break;
+	case WM_TIMER:
+		{
+			auto* player_window = reinterpret_cast<PlayerWindow*>(GetWindowLongPtr(window, GWLP_USERDATA));
+			player_window->render_current_frame();
+		}
+		break;
 	default:
 		return DefWindowProc(window, message, wparam, lparam);
 	}
@@ -45,7 +52,6 @@ LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wparam, LPAR
 
 PlayerWindow::PlayerWindow(HINSTANCE hInstance) : window_(NULL),
 	menu_(NULL),
-	hdc_(NULL),
 	hglrc_(NULL)
 {
 	WNDCLASS window_class = { 0 };
@@ -63,11 +69,11 @@ PlayerWindow::PlayerWindow(HINSTANCE hInstance) : window_(NULL),
 	}
 }
 
-void PlayerWindow::initialize()
+void PlayerWindow::initialize(HWND window)
 {
 	try
 	{
-		PIXELFORMATDESCRIPTOR pfd =
+		PIXELFORMATDESCRIPTOR pixel_format_descriptor =
 		{
 			sizeof(PIXELFORMATDESCRIPTOR),
 			1,
@@ -86,22 +92,20 @@ void PlayerWindow::initialize()
 			0,
 			0, 0, 0
 		};
-
-		hdc_ = GetDC(window_);
-
-		int  letWindowsChooseThisPixelFormat;
-		letWindowsChooseThisPixelFormat = ChoosePixelFormat(hdc_, &pfd);
-		SetPixelFormat(hdc_, letWindowsChooseThisPixelFormat, &pfd);
-
-		hglrc_ = wglCreateContext(hdc_);
-		lock();
-		opengl_renderer_ = std::make_unique<OpenGLRenderer>(*this, player_, load_shader(IDR_FRAGMENT_SHADER).c_str(), load_shader(IDR_VERTEX_SHADER).c_str());
+		device_context_ = window;
+		int  pixel_format = ChoosePixelFormat(device_context_, &pixel_format_descriptor);
+		SetPixelFormat(device_context_, pixel_format, &pixel_format_descriptor);
+		hglrc_ = wglCreateContext(device_context_);
+		CHECK(hglrc_ != NULL, "wglCreateContext(0x%p) failed with %d", static_cast<HDC>(device_context_), GetLastError());
+		opengl_renderer_ = OpenGLRenderer::Create(*this, player_, load_shader(IDR_FRAGMENT_SHADER).c_str(), load_shader(IDR_VERTEX_SHADER).c_str());
 	}
 	catch (const ExceptionBase& exception)
 	{
+		OutputDebugStringA(format_message("%s\n", exception.error_with_location()).c_str());
 	}
 	catch (const std::exception& exception)
 	{
+		OutputDebugStringA(format_message("%s\n", exception.what()).c_str());
 	}
 }
 
@@ -145,12 +149,13 @@ void PlayerWindow::play_file(const wchar_t* file_path)
 
 void PlayerWindow::lock()
 {
-	CHECK(wglMakeCurrent(hdc_, hglrc_), "wglMakeCurrent(0x%p, 0x%p) failed with %d", hdc_, hglrc_, GetLastError());
+	CHECK(wglMakeCurrent(device_context_, hglrc_), "wglMakeCurrent(0x%p, 0x%p) failed with %d", static_cast<HDC>(device_context_), hglrc_, GetLastError());
 }
 
 void PlayerWindow::unlock()
 {
-	CHECK(wglDeleteContext(hglrc_), "wglDeleteContext(0x%p, 0x%p) failed with %d", hglrc_, GetLastError());
+	SwapBuffers(device_context_);
+	CHECK(wglMakeCurrent(NULL, NULL), "wglDeleteContext(0, 0) failed with %d", GetLastError());
 }
 
 bool PlayerWindow::on_video_frame_size_changed(unsigned int width, unsigned int height)
@@ -175,5 +180,10 @@ void PlayerWindow::on_exception(const std::exception& exception)
 
 void PlayerWindow::set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator)
 {
+	SetTimer(window_, 0, 1000 * timescale_numerator / timescale_denominator, nullptr);
+}
 
+void PlayerWindow::render_current_frame()
+{
+	opengl_renderer_->render_frame(get_host_time());
 }

@@ -13,7 +13,6 @@ class OpenGLRenderer
 public:
     OpenGLRenderer(IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
     
-    void initialize();
     // Player::IEventListener;
 	bool on_video_frame_size_changed(unsigned int width, unsigned int height);
     bool on_render_aread_size_changed(unsigned int width, unsigned int height);
@@ -25,6 +24,8 @@ public:
 
 private:
     void render_frame(YUVFrame& frame);
+
+	static std::unique_ptr<OpenGLRenderer> Create(IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size = 50);
 
 private:
     IOpenGLContext& context_;

@@ -84,7 +84,6 @@ OpenGLRenderer::OpenGLRenderer(IOpenGLContext& context, Player& player, const ch
     CHECK_OPENGL("glBufferData() failed");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     CHECK_OPENGL("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) failed");
-    OpenGLContextLock lock(context_);
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -206,6 +205,10 @@ void OpenGLRenderer::render_frame(uint64_t host_time)
     YUVFrame frame;
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
+		if (frames_.empty())
+		{
+			return;
+		}
         auto& first_frame_entry = frames_.front();
         if (first_frame_entry.first != 0 && first_frame_entry.first < host_time)
         {
@@ -317,4 +320,10 @@ void OpenGLRenderer::render_frame(YUVFrame& frame)
     {
         fprintf(stderr, "%s(%d): caught exception \n\t%s", __FILE__, __LINE__, exception.what());
     }
+}
+
+std::unique_ptr<OpenGLRenderer> OpenGLRenderer::Create(IOpenGLContext& context, Player& player, const char* fragment_shader_source, const char* vertex_shader_source, size_t frame_queue_size)
+{
+	OpenGLContextLock lock(context);
+	return std::make_unique<OpenGLRenderer>(context, player, fragment_shader_source, vertex_shader_source, frame_queue_size);
 }

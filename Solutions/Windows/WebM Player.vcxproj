@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -163,6 +163,7 @@
     <ClInclude Include="..\..\Source\VideoDecoder.h" />
     <ClInclude Include="..\..\Source\VPXVideoDecoder.h" />
     <ClInclude Include="..\..\Source\WebMPlayerOpenGLProgramVariables.h" />
+    <ClInclude Include="..\..\Source\Windows\DeviceContext.h" />
     <ClInclude Include="..\..\Source\Windows\PlayerWindow.h" />
     <ClInclude Include="..\..\Source\YUVFrame.h" />
     <ClInclude Include="resource.h" />

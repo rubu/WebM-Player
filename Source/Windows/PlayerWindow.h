@@ -3,6 +3,7 @@
 #include "../OpenGLRenderer.h"
 #include "../Player.h"
 #include "../OpenGL/OpenGLContext.h"
+#include "DeviceContext.h"
 
 #include <Windows.h>
 
@@ -11,7 +12,7 @@ class PlayerWindow : public IOpenGLContext, public Player::IEventListener
 public:
 	PlayerWindow(HINSTANCE hInstance);
 
-	void initialize();
+	void initialize(HWND hWindow);
 	void open_file();
 	void play_file(const wchar_t* file_path);
 
@@ -26,11 +27,14 @@ public:
 	void on_exception(const std::exception& exception) override;
 	void set_timescale(unsigned int timescale_numerator, unsigned int timescale_denominator) override;
 
+public:
+	void render_current_frame();
+
 private:
 	HWND window_;
 	HMENU menu_;
 	Player player_;
 	std::unique_ptr<OpenGLRenderer> opengl_renderer_;
-	HDC hdc_;
+	DeviceContext device_context_;
 	HGLRC hglrc_;
 };
